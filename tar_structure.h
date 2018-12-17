@@ -9,12 +9,12 @@
  */
 struct tar_archive{
 	char archive_name[50];
-	int start_location_of_data_in_memory;
-	struct file_tar *files ;
-	
+	struct file_tar_header **headers;
+	int number_of_files_in_tar;
 };
 
-struct file_tar {
+struct file_tar_header {
+		int begin_adress;
         union {
             // OLD POSIX FORMAT OF TAR FILES
             struct {
@@ -33,7 +33,7 @@ struct file_tar {
             struct {
                 char offset_of_old_posix[156];              
                 char type_of_file;        
-                char link[100];   
+                char link_new[100];   
                 char ustar_version[8];              
                 char owner_name[32];             
                 char owner_group_name[32];           
