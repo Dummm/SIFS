@@ -2,49 +2,54 @@
 
 /* Refrence wiki tar(computing);
  * https://en.wikipedia.org/wiki/Tar_(computing)
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ * https://www.gnu.org/software/tar/manual/html_node/Standard.html
  */
+
 struct tar_archive{
 	char archive_name[50];
 	struct file_tar_header **headers;
 	int number_of_files_in_tar;
 };
 
-struct file_tar_header {
-		int begin_adress;
-        union {
-            // OLD POSIX FORMAT OF TAR FILES
-            struct {
-                char name_of_file[100];             
-                char mode_permissions[8];               
-                char user_id[8];                
-                char group_id[8];                
-                char size_of_file[12];             
-                char modification_time[12];             
-                char checksum_for_header[8];              
-                char link;                  
-                char name_of_link_file[100];       
-            };
+/* Descriptor for a single file hole.  */
+struct sparse {					// byte offset
+  char offset[12];  		//   0
+  char numbytes[12];		//  12
+};
 
-            // UStar format (POSIX IEEE P1003.1)
-            struct {
-                char offset_of_old_posix[156];              
-                char type_of_file;        
-                char link_new[100];   
-                char ustar_version[8];              
-                char owner_name[32];             
-                char owner_group_name[32];           
-                char major[8];              
-                char minor[8];             
-                char filename_prefix[155];
-            };
-        };
+#define SPARSES_IN_STAR_HEADER      4
+#define SPARSES_IN_STAR_EXT_HEADER  21
 
-        char block[512];                   
-   
+struct file_tar_header {// byte offset
+	char name[100];				//   0
+	char mode[8];					// 100
+	char uid[8];					// 108
+	char gid[8];					// 116
+	char size[12];				// 124
+	char mtime[12];				// 136
+	char chksum[8];				// 148
+	char typeflag[1];			// 156
+	char linkname[100];		// 157
 
-    struct file_tar * next;
+	/// UStar
+	char magic[6];				// 257
+	char version[2];			// 263
+	char uname[32];				// 265
+	char gname[32];				// 297
+	char devmajor[8];			// 329
+	char devminor[8];			// 337
+	char prefix[1];			// 345
+  char fill2[1];           // 346
+  char fill3[8];        // 347
+  char isextended[1];      // 355
+  struct sparse sp[SPARSES_IN_STAR_HEADER]; // 356
+  char realsize[12];    // 452  Actual size of the file
+  char offset[12];      // 464  Offset of multivolume contents
+  char atime[12];       // 476
+  char ctime[12];       // 488
+  char mfill[8];        // 500
+  char xmagic[4];       // 508  "tar"
 };
