@@ -1,5 +1,3 @@
-
-
 /* Refrence wiki tar(computing);
  * https://en.wikipedia.org/wiki/Tar_(computing)
  *
@@ -23,7 +21,7 @@ struct sparse {					// byte offset
 #define SPARSES_IN_STAR_HEADER      4
 #define SPARSES_IN_STAR_EXT_HEADER  21
 
-struct file_tar_header {// byte offset
+struct tar_header {// byte offset
 	char name[100];				//   0
 	char mode[8];					// 100
 	char uid[8];					// 108
