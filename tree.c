@@ -7,7 +7,8 @@
 int node_init(struct node *node) {
 	node = malloc(sizeof(struct node));
 	printf("a");
-	node->header = NULL;
+	//node->header = NULL;
+	node->header = malloc(sizeof(struct tar_header));
 	printf("a");
 	node->parent = NULL;
 	printf("a");

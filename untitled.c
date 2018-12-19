@@ -155,9 +155,14 @@ int main(int argc, char **argv) {
 	node_init(root);
 	printf("muie?\n");
 
-	root->header = malloc(sizeof(struct tar_header));
+	printf("%o", root->header);
+	printf("muie.\n");
 	//char tmp[3] = "./";
 	//strcpy(root->header->name, tmp);
+	struct tar_header a;
+	strcpy(a.name, "./");
+
+	*(root->header) = a;
 
 	printf("muie!\n");
 	populate_tree_directory(fd, root);
