@@ -4,19 +4,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int node_init(struct node *node) {
-	node = malloc(sizeof(struct node));
+int node_init(struct node *n) {
+	n = malloc(sizeof(struct node));
 	printf("a");
 	//node->header = NULL;
-	node->header = malloc(sizeof(struct tar_header));
+	n->header = malloc(sizeof(struct tar_header));
 	printf("a");
-	node->parent = NULL;
+	n->parent = NULL;
 	printf("a");
-	node->children = NULL;
+	n->children = NULL;
 	printf("a");
-	node->children_size = 0;
+	n->children_size = 0;
 	printf("a");
-	node->file = NULL;
+	n->file = NULL;
 	printf("a");
 	return 1;
 }

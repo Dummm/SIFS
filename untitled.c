@@ -13,13 +13,12 @@ int populate_tree_directory(int fd, struct node *dir) {
 	struct tar_header *auxTar = malloc(sizeof(struct tar_header));
 	struct node *auxNode;
 	struct node **auxDirChildren;
-	printf("vreau sa mor\n");
+	printf("Ai intrat in functie, boss.\n");
 
 	printf("%d %d", fd, (int)lseek(fd, 0, SEEK_CUR));
 
-	printf("vreau sa mor\n");
 	while (read(fd, auxTar, sizeof(struct tar_header))) {
-	printf("impuscat c-un mic pistol\n");
+		printf("Ai intrat in while, boss\n");
 		// Verify if we're in the same directory
 		printf("%s\n%s\n", dir->header->name, auxTar->name);
 		if (strncmp(dir->header->name, auxTar->name, strlen(dir->header->name) - 1) != 0) break;
@@ -151,18 +150,15 @@ int main(int argc, char **argv) {
 	lseek(fd, 0, SEEK_SET);
 
 	printf("muie\n");
-	struct node *root;
+	struct node *root = malloc(sizeof(struct node));
 	node_init(root);
 	printf("muie?\n");
 
 	printf("%o", root->header);
 	printf("muie.\n");
-	//char tmp[3] = "./";
-	//strcpy(root->header->name, tmp);
-	struct tar_header a;
-	strcpy(a.name, "./");
+	char tmp[3] = "./";
+	strcpy(root->header->name, "./");
 
-	*(root->header) = a;
 
 	printf("muie!\n");
 	populate_tree_directory(fd, root);
