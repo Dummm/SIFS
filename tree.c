@@ -4,18 +4,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int node_init(struct node *node) {
-	node = malloc(sizeof(struct node));
+int node_init(struct node *nod) {
+	nod = malloc(sizeof(struct node));
 	printf("a");
-	node->header = NULL;
+	nod->header = malloc(1);
 	printf("a");
-	node->parent = NULL;
+	nod->parent = malloc(1);
 	printf("a");
-	node->children = NULL;
+	nod->children = NULL;
 	printf("a");
-	node->children_size = 0;
+	nod->children_size = 0;
 	printf("a");
-	node->file = NULL;
+	nod->file = NULL;
 	printf("a");
 	return 1;
 }
