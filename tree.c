@@ -9,15 +9,10 @@ int node_init(struct node *n) {
 	printf("a");
 	//node->header = NULL;
 	n->header = malloc(sizeof(struct tar_header));
-	printf("a");
 	n->parent = NULL;
-	printf("a");
 	n->children = NULL;
-	printf("a");
 	n->children_size = 0;
-	printf("a");
 	n->file = NULL;
-	printf("a");
 	return 1;
 }
 int tree_add_child(struct node *parent, struct node *new_node) {

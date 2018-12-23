@@ -13,15 +13,14 @@ int populate_tree_directory(int fd, struct node *dir) {
 	struct tar_header *auxTar = malloc(sizeof(struct tar_header));
 	struct node *auxNode;
 	struct node **auxDirChildren;
-	printf("Ai intrat in functie, boss.\n");
 
 	printf("%d %d", fd, (int)lseek(fd, 0, SEEK_CUR));
 
 	while (read(fd, auxTar, sizeof(struct tar_header))) {
-		printf("Ai intrat in while, boss\n");
 		// Verify if we're in the same directory
 		printf("%s\n%s\n", dir->header->name, auxTar->name);
-		if (strncmp(dir->header->name, auxTar->name, strlen(dir->header->name) - 1) != 0) break;
+		if (strncmp(dir->header->name, auxTar->name,
+		 strlen(dir->header->name) - 1) != 0) break;
 
 		printf("Read %s\n", auxTar->name);
 		// Create node
@@ -141,26 +140,21 @@ int populate_node_tree(int fd, struct node *root) {
 
 int main(int argc, char **argv) {
 
-	printf("muie\n");
 	int fd;
-	//if ((fd = open(argv[1], O_RDONLY)) == -1)
-	if ((fd = open("testTar.tar", O_RDONLY)) == -1)
+	if ((fd = open(argv[1], O_RDONLY)) == -1)
+	//if ((fd = open("testTar.tar", O_RDONLY)) == -1)
 		printf("File open error: %d\n", errno);
-	printf("muie\n");
 	lseek(fd, 0, SEEK_SET);
 
-	printf("muie\n");
 	struct node *root = malloc(sizeof(struct node));
 	node_init(root);
-	printf("muie?\n");
 
-	printf("%o", root->header);
-	printf("muie.\n");
+	root->header = malloc(sizeof(struct tar_header));
 	char tmp[3] = "./";
-	strcpy(root->header->name, "./");
+	strcpy(root->header->name, tmp);
 
+	printf("%s\n", root->header->name);
 
-	printf("muie!\n");
 	populate_tree_directory(fd, root);
 
 	close(fd);
