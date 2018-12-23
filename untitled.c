@@ -26,7 +26,14 @@ int populate_tree_directory(int fd, struct node *dir) {
 		printf("Read file\\directory %s\n", auxTar->name);
 
 		// Create node
-		node_init(auxNode);
+		//node_init(auxNode);
+		auxNode = malloc(sizeof(struct node));
+		auxNode->header = malloc(sizeof(struct tar_header));
+		auxNode->parent = NULL;
+		auxNode->children = NULL;
+		auxNode->children_size = 0;
+		auxNode->file = NULL;
+
 		auxNode->parent = dir;
 		auxNode->header = auxTar;
 		printf("\tCreated node.\n");
