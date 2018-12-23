@@ -4,19 +4,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int node_init(struct node *nod) {
-	nod = malloc(sizeof(struct node));
-	printf("a");
-	nod->header = malloc(1);
-	printf("a");
-	nod->parent = malloc(1);
-	printf("a");
-	nod->children = NULL;
-	printf("a");
-	nod->children_size = 0;
-	printf("a");
-	nod->file = NULL;
-	printf("a");
+int node_init(struct node *n) {
+	n = malloc(sizeof(struct node));
+	//node->header = NULL;
+	n->header = malloc(sizeof(struct tar_header));
+	n->parent = NULL;
+	n->children = NULL;
+	n->children_size = 0;
+	n->file = NULL;
 	return 1;
 }
 int tree_add_child(struct node *parent, struct node *new_node) {
