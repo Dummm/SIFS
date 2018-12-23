@@ -6,7 +6,6 @@
 
 int node_init(struct node *n) {
 	n = malloc(sizeof(struct node));
-	printf("a");
 	//node->header = NULL;
 	n->header = malloc(sizeof(struct tar_header));
 	n->parent = NULL;

@@ -14,15 +14,16 @@ int populate_tree_directory(int fd, struct node *dir) {
 	struct node *auxNode;
 	struct node **auxDirChildren;
 
-	printf("%d %d", fd, (int)lseek(fd, 0, SEEK_CUR));
+	printf("\nCurrent directory node: %s\n", dir->header->name);
 
 	while (read(fd, auxTar, sizeof(struct tar_header))) {
-		// Verify if we're in the same directory
-		printf("%s\n%s\n", dir->header->name, auxTar->name);
-		if (strncmp(dir->header->name, auxTar->name,
-		 strlen(dir->header->name) - 1) != 0) break;
+		// Verify if the file we read is in the same directory
+		if (strncmp(
+			dir->header->name,
+			auxTar->name,
+			strlen(dir->header->name) - 1) != 0) break;
 
-		printf("Read %s\n", auxTar->name);
+		printf("Read file\\directory %s\n", auxTar->name);
 		// Create node
 		node_init(auxNode);
 		auxNode->parent = dir;
@@ -53,6 +54,7 @@ int populate_tree_directory(int fd, struct node *dir) {
 			lseek(fd, 512 - (pos % 512), SEEK_CUR);
 		}
 
+		// PROBABIL NU AR TREBUI SA FIE IN WHILE, BOSS
 		// Undo last read
 		lseek(fd, -(sizeof(struct tar_header)), SEEK_CUR);
 	}
@@ -63,97 +65,24 @@ int populate_tree_directory(int fd, struct node *dir) {
 	return fd;
 }
 
-int populate_node_tree(int fd, struct node *root) {
-	node_init(root);
-
-	struct tar_header *auxTar = malloc(sizeof(struct tar_header));
-
-	while (read(fd, auxTar, sizeof(struct tar_header))) {
-		if (auxTar->name[0] == '\0') break;
-		/*
-		printf("%d\n", lseek(fd, 0, SEEK_CUR));
-
-		printf("%s\n", auxTar->name);
-		printf("\tFile mode: %s\n", auxTar->mode);
-		printf("\tOwner ID: %s\n", auxTar->uid);
-		printf("\tGroup ID: %s\n", auxTar->gid);
-		printf("\tSize: %s\n", auxTar->size);
-		printf("\tModification time: %s\n", auxTar->mtime);
-		printf("\tChecksum: %s\n", auxTar->chksum);
-		printf("\tType flag: %s\n", auxTar->typeflag);
-		printf("\tLink name: %s\n", auxTar->linkname);
-
-		/// UStar
-		printf("\tUStar: %s\n", auxTar->magic);
-		printf("\tUStar version: %s\n", auxTar->version);
-		printf("\tOwner name: %s\n", auxTar->uname);
-		printf("\tGroup name: %s\n", auxTar->gname);
-		printf("\tDevice major: %s\n", auxTar->devmajor);
-		printf("\tDevice minor: %s\n", auxTar->devminor);
-		printf("\tPrefix: %s\n", auxTar->prefix);
-		//printf("\t: %s\n", auxTar->fill2);
-		//printf("\t: %s\n", auxTar->fill3);
-		printf("\tIs extended: %s\n", auxTar->isextended);
-		//printf("\t: %s\n", auxTar->sparse);
-		printf("\tReal size: %s\n", auxTar->realsize);
-		printf("\tOffset: %s\n", auxTar->offset);
-		printf("\tAccess time: %s\n", auxTar->atime);
-		printf("\tCreation Time: %s\n", auxTar->ctime);
-		//printf("\t: %s\n", auxTar->mfill);
-		printf("\tX magic: %s\n", auxTar->xmagic);
-		*/
-
-		if (strcmp(auxTar->typeflag, "5") == 0) {
-			int sz = strtoul(auxTar->size, NULL, 8);
-			char *fileContent = malloc(sz);
-			read(fd, fileContent, sz);
-			printf("File content[%d]:\n", sz);
-			printf("%s", fileContent);
-			free(fileContent);
-
-			int pos = lseek(fd, 0, SEEK_CUR);
-			//printf("%d", 512 - (pos % 512));
-			lseek(fd, 512 - (pos % 512), SEEK_CUR);
-		} else {
-			int sz = strtoul(auxTar->size, NULL, 8);
-			char *fileContent = malloc(sz);
-			read(fd, fileContent, sz);
-			printf("File content[%d]:\n", sz);
-			printf("%s", fileContent);
-			free(fileContent);
-
-			int pos = lseek(fd, 0, SEEK_CUR);
-			//printf("%d", 512 - (pos % 512));
-			lseek(fd, 512 - (pos % 512), SEEK_CUR);
-		}
-
-		printf("\n");
-	}
-
-
-	printf("%d\n\n", (int)lseek(fd, 0, SEEK_END));
-
-
-	free(auxTar);
-	return 1;
-}
-
 int main(int argc, char **argv) {
 
 	int fd;
-	if ((fd = open(argv[1], O_RDONLY)) == -1)
-	//if ((fd = open("testTar.tar", O_RDONLY)) == -1)
-		printf("File open error: %d\n", errno);
+	if ((fd = open(argv[1], O_RDONLY)) == -1) {
+		printf("File open error: %d\n\n", errno);
+		return -1;
+	}
+	else
+		printf("Opened file: %s\n\n", argv[1]);
+
 	lseek(fd, 0, SEEK_SET);
 
 	struct node *root = malloc(sizeof(struct node));
 	node_init(root);
 
+	// Adding root folder path
 	root->header = malloc(sizeof(struct tar_header));
-	char tmp[3] = "./";
-	strcpy(root->header->name, tmp);
-
-	printf("%s\n", root->header->name);
+	strcpy(root->header->name, "./");
 
 	populate_tree_directory(fd, root);
 
