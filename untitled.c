@@ -41,8 +41,8 @@ int populate_tree_directory(int fd, struct node *dir) {
 		// Add node to parent
 		printf("Previous children:\n");
 		int i;
-		for(i = 0; i < dir->children_size; i++) {
-			printf("\t%s\n", dir->children[i]->header->name);
+		for (i = 0; i < dir->children_size; i++) {
+			printf("\t%p\t%s\n", dir->children[i]->header->name, dir->children[i]->header->name);
 		}
 
 		dir->children_size++;
@@ -51,8 +51,8 @@ int populate_tree_directory(int fd, struct node *dir) {
 		dir->children[dir->children_size - 1] = auxNode;
 
 		printf("New children:\n");
-		for(i = 0; i < dir->children_size; i++) {
-			printf("\t%s\n", dir->children[i]->header->name);
+		for (i = 0; i < dir->children_size; i++) {
+			printf("\t%p\t%s\n", dir->children[i]->header->name, dir->children[i]->header->name);
 		}
 
 		printf("\tAdded node to parent.\n");
@@ -75,6 +75,8 @@ int populate_tree_directory(int fd, struct node *dir) {
 			//printf("%d", 512 - (pos % 512));
 			lseek(fd, 512 - (pos % 512), SEEK_CUR);
 		}
+
+		auxTar = malloc(sizeof(struct tar_header));
 	}
 
 	// PROBABIL NU AR TREBUI SA FIE IN WHILE, BOSS
@@ -91,7 +93,7 @@ void print_tree(struct node *n) {
 	printf("%s\n", n->header->name);
 
 	int i;
-	for(i = 0; i < n->children_size; i++) {
+	for (i = 0; i < n->children_size; i++) {
 		print_tree(n->children[i]);
 	}
 }
