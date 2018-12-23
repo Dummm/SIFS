@@ -54,3 +54,5 @@ dkms.conf
 # Archives
 *.tar
 *.tar.*
+=======
+*.tar
