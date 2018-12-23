@@ -28,7 +28,7 @@ int populate_tree_directory(int fd, struct node *dir) {
 		// Create node
 		//node_init(auxNode);
 		auxNode = malloc(sizeof(struct node));
-		auxNode->header = malloc(sizeof(struct tar_header));
+		//auxNode->header = malloc(sizeof(struct tar_header));
 		auxNode->parent = NULL;
 		auxNode->children = NULL;
 		auxNode->children_size = 0;
@@ -63,16 +63,25 @@ int populate_tree_directory(int fd, struct node *dir) {
 			//printf("%d", 512 - (pos % 512));
 			lseek(fd, 512 - (pos % 512), SEEK_CUR);
 		}
-
-		// PROBABIL NU AR TREBUI SA FIE IN WHILE, BOSS
-		// Undo last read
-		lseek(fd, -(sizeof(struct tar_header)), SEEK_CUR);
 	}
 
-	free(auxTar);
+	// PROBABIL NU AR TREBUI SA FIE IN WHILE, BOSS
+	// Undo last read
+	lseek(fd, -(sizeof(struct tar_header)), SEEK_CUR);
+
+	//free(auxTar);
 
 	// Return new reading position
 	return fd;
+}
+
+void print_tree(struct node *n) {
+	printf("%s\n", n->header->name);
+
+	int i;
+	for(i = 0; i < n->children_size; i++) {
+		print_tree(n->children[i]);
+	}
 }
 
 int main(int argc, char **argv) {
@@ -95,6 +104,11 @@ int main(int argc, char **argv) {
 	strcpy(root->header->name, "./");
 
 	populate_tree_directory(fd, root);
+
+
+	/// TEST TEST WOOOOOOOOOOOOOO
+	printf("\n\n\n");
+	print_tree(root);
 
 	close(fd);
 	return 0;
