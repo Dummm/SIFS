@@ -39,10 +39,22 @@ int populate_tree_directory(int fd, struct node *dir) {
 		printf("\tCreated node.\n");
 
 		// Add node to parent
+		printf("Previous children:\n");
+		int i;
+		for(i = 0; i < dir->children_size; i++) {
+			printf("\t%s\n", dir->children[i]->header->name);
+		}
+
 		dir->children_size++;
 		auxDirChildren = realloc(dir->children, dir->children_size * sizeof(struct node *));
 		dir->children = auxDirChildren;
 		dir->children[dir->children_size - 1] = auxNode;
+
+		printf("New children:\n");
+		for(i = 0; i < dir->children_size; i++) {
+			printf("\t%s\n", dir->children[i]->header->name);
+		}
+
 		printf("\tAdded node to parent.\n");
 
 		if (strcmp(auxNode->header->typeflag, "5") == 0) {
