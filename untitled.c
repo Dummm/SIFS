@@ -24,18 +24,21 @@ int populate_tree_directory(int fd, struct node *dir) {
 			strlen(dir->header->name) - 1) != 0) break;
 
 		printf("Read file\\directory %s\n", auxTar->name);
+
 		// Create node
 		node_init(auxNode);
 		auxNode->parent = dir;
 		auxNode->header = auxTar;
+		printf("\tCreated node.\n");
 
 		// Add node to parent
 		dir->children_size++;
 		auxDirChildren = realloc(dir->children, dir->children_size * sizeof(struct node *));
 		dir->children = auxDirChildren;
 		dir->children[dir->children_size - 1] = auxNode;
+		printf("\tAdded node to parent.\n");
 
-		if (strcmp(auxTar->typeflag, "5") == 0) {
+		if (strcmp(auxNode->header->typeflag, "5") == 0) {
 			// Node is a directory
 			printf("Creating directory node for %s\n", auxTar->name);
 			fd = populate_tree_directory(fd, auxNode);
