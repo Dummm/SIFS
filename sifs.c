@@ -1,179 +1,139 @@
-/*
-  FUSE: Filesystem in Userspace
-  Copyright (C) 2001-2007  Miklos Szeredi <miklos@szeredi.hu>
-
-  This program can be distributed under the terms of the GNU GPL.
-  See the file COPYING.
-*/
-
-/** @file
- *
- * minimal example filesystem using high-level API
- *
- * Compile with:
- *
- *     gcc -Wall sifs.c `pkg-config fuse3 --cflags --libs` -o sifs
- *
- * ## Source code ##
- * \include sifs.c
- */
-
-
-#define FUSE_USE_VERSION 31
-
-#include <fuse.h>
+#include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
-#include <errno.h>
 #include <fcntl.h>
-#include <stddef.h>
-#include <assert.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include "tree.c"
 
-/*
- * Command line options
- *
- * We can't set default values for the char* fields here because
- * fuse_opt_parse would attempt to free() them when the user specifies
- * different values on the command line.
- */
-static struct options {
-	const char *filename;
-	const char *contents;
-	int show_help;
-} options;
+int populate_tree_directory(int fd, struct node *dir) {
+	struct tar_header *auxTar = malloc(sizeof(struct tar_header));
+	struct node *auxNode;
+	struct node **auxDirChildren;
 
-#define OPTION(t, p)                           \
-    { t, offsetof(struct options, p), 1 }
-static const struct fuse_opt option_spec[] = {
-	OPTION("--name=%s", filename),
-	OPTION("--contents=%s", contents),
-	OPTION("-h", show_help),
-	OPTION("--help", show_help),
-	FUSE_OPT_END
-};
+	printf("\nCurrent directory node: %s\n", dir->header->name);
 
-static void *sifs_init(struct fuse_conn_info *conn,
-			struct fuse_config *cfg)
-{
-	(void) conn;
-	cfg->kernel_cache = 1;
-	return NULL;
-}
+	while (read(fd, auxTar, sizeof(struct tar_header))) {
+		// Verifying if the file we read is in the same directory
+		if (strncmp(
+			dir->header->name,
+			auxTar->name,
+			strlen(dir->header->name) - 1) != 0) {
+				free(auxTar);
+				break;
+		}
 
-static int sifs_getattr(const char *path, struct stat *stbuf,
-			 struct fuse_file_info *fi)
-{
-	(void) fi;
-	int res = 0;
+		printf("\tRead file\\directory %s\n", auxTar->name);
 
-	memset(stbuf, 0, sizeof(struct stat));
-	if (strcmp(path, "/") == 0) {
-		stbuf->st_mode = S_IFDIR | 0755;
-		stbuf->st_nlink = 2;
-	} else if (strcmp(path+1, options.filename) == 0) {
-		stbuf->st_mode = S_IFREG | 0444;
-		stbuf->st_nlink = 1;
-		stbuf->st_size = strlen(options.contents);
-	} else
-		res = -ENOENT;
+		// Creating node
+		auxNode = malloc(sizeof(struct node));
+		auxNode->parent = NULL;
+		auxNode->children = NULL;
+		auxNode->children_size = 0;
+		auxNode->file = NULL;
 
-	return res;
-}
+		auxNode->parent = dir;
+		auxNode->header = auxTar;
+		printf("\tCreated node.\n");
 
-static int sifs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
-			 off_t offset, struct fuse_file_info *fi,
-			 enum fuse_readdir_flags flags)
-{
-	(void) offset;
-	(void) fi;
-	(void) flags;
+		// Adding node to parent
+		/*
+		printf("Previous children:\n");
+		int i;
+		for (i = 0; i < dir->children_size; i++) {
+			printf("\t%p\t%s\n", dir->children[i]->header->name, dir->children[i]->header->name);
+		}
+		*/
+		dir->children_size++;
+		auxDirChildren = realloc(dir->children, dir->children_size * sizeof(struct node *));
+		dir->children = auxDirChildren;
+		dir->children[dir->children_size - 1] = auxNode;
+		/*
+		printf("New children:\n");
+		for (i = 0; i < dir->children_size; i++) {
+			printf("\t%p\t%s\n", dir->children[i]->header->name, dir->children[i]->header->name);
+		}
+		*/
+		printf("\tAdded node to parent.\n");
 
-	if (strcmp(path, "/") != 0)
-		return -ENOENT;
+		if (strcmp(auxNode->header->typeflag, "5") == 0) {
+			// Node is a directory
+			printf("\tAdding children to directory node for %s\n", auxTar->name);
+			fd = populate_tree_directory(fd, auxNode);
+			printf("\t\tFinished adding children to %s\n", auxTar->name);
+		} else {
+			// Node is a file
+			printf("\tAdding file for %s\n", auxTar->name);
+			int sz = strtoul(auxTar->size, NULL, 8);
+			auxNode->file = malloc(sz);
+			read(fd, auxNode->file, sz);
+			//printf("File content[%d]:\n", sz);
+			//printf("%s", auxNode->file);
 
-	filler(buf, ".", NULL, 0, 0);
-	filler(buf, "..", NULL, 0, 0);
-	filler(buf, options.filename, NULL, 0, 0);
+			// Reallinging reading head
+			int pos = lseek(fd, 0, SEEK_CUR);
+			lseek(fd, 512 - (pos % 512), SEEK_CUR);
+		}
 
-	return 0;
-}
-
-static int sifs_open(const char *path, struct fuse_file_info *fi)
-{
-	if (strcmp(path+1, options.filename) != 0)
-		return -ENOENT;
-
-	if ((fi->flags & O_ACCMODE) != O_RDONLY)
-		return -EACCES;
-
-	return 0;
-}
-
-static int sifs_read(const char *path, char *buf, size_t size, off_t offset,
-		      struct fuse_file_info *fi)
-{
-	size_t len;
-	(void) fi;
-	if(strcmp(path+1, options.filename) != 0)
-		return -ENOENT;
-
-	len = strlen(options.contents);
-	if (offset < len) {
-		if (offset + size > len)
-			size = len - offset;
-		memcpy(buf, options.contents + offset, size);
-	} else
-		size = 0;
-
-	return size;
-}
-
-static struct fuse_operations sifs_oper = {
-	.init           = sifs_init,
-	.getattr	= sifs_getattr,
-	.readdir	= sifs_readdir,
-	.open		= sifs_open,
-	.read		= sifs_read,
-};
-
-static void show_help(const char *progname)
-{
-	printf("usage: %s [options] <mountpoint>\n\n", progname);
-	printf("File-system specific options:\n"
-	       "    --name=<s>          Name of the \"sifs\" file\n"
-	       "                        (default: \"sifs\")\n"
-	       "    --contents=<s>      Contents \"sifs\" file\n"
-	       "                        (default \"sifs, World!\\n\")\n"
-	       "\n");
-}
-
-int main(int argc, char *argv[])
-{
-	int ret;
-	struct fuse_args args = FUSE_ARGS_INIT(argc, argv);
-
-	/* Set defaults -- we have to use strdup so that
-	   fuse_opt_parse can free the defaults if other
-	   values are specified */
-	options.filename = strdup("sifs");
-	options.contents = strdup("sifs World!\n");
-
-	/* Parse options */
-	if (fuse_opt_parse(&args, &options, option_spec, NULL) == -1)
-		return 1;
-
-	/* When --help is specified, first print our own file-system
-	   specific help text, then signal fuse_main to show
-	   additional help (by adding `--help` to the options again)
-	   without usage: line (by setting argv[0] to the empty
-	   string) */
-	if (options.show_help) {
-		show_help(argv[0]);
-		assert(fuse_opt_add_arg(&args, "--help") == 0);
-		args.argv[0][0] = '\0';
+		auxTar = malloc(sizeof(struct tar_header));
 	}
 
-	ret = fuse_main(args.argc, args.argv, &sifs_oper, NULL);
-	fuse_opt_free_args(&args);
-	return ret;
+	// Undo last read
+	// Last read is outside the current folder
+	lseek(fd, -(sizeof(struct tar_header)), SEEK_CUR);
+
+	//free(auxTar);
+
+	// Returning new reading position
+	return fd;
 }
+
+// Function that prints tree
+void print_tree(struct node *n) {
+	printf("%s\n", n->header->name);
+
+	int i;
+	for (i = 0; i < n->children_size; i++) {
+		print_tree(n->children[i]);
+	}
+}
+
+int main(int argc, char **argv) {
+
+	// Opening file
+	int fd;
+	if ((fd = open(argv[1], O_RDONLY)) == -1) {
+		printf("File open error: %d\n\n", errno);
+		return -1;
+	}
+	else {
+		printf("Opened file: %s\n\n", argv[1]);
+	}
+
+	// Moving reading head to beginning of file
+	lseek(fd, 0, SEEK_SET);
+
+	// Creating root
+	struct node *root = malloc(sizeof(struct node));
+	root->parent = NULL;
+	root->children = NULL;
+	root->children_size = 0;
+	root->file = NULL;
+
+	// Adding root folder path
+	root->header = malloc(sizeof(struct tar_header));
+	strcpy(root->header->name, "./");
+
+	// Creating tree for directory structure
+	populate_tree_directory(fd, root);
+
+	/// TEST TEST WOOOOOOOOOOOOOO
+	printf("\n\n\nTar structure:\n");
+	print_tree(root);
+
+	close(fd);
+	return 0;
+}
+
