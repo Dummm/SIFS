@@ -6,6 +6,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fuse.h>
 #include "lib/tree.h"
 #include "lib/tar_structure.h"
 

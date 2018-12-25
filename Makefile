@@ -12,7 +12,7 @@
 #
 # for C++ define  CC = g++
 CC = gcc
-CFLAGS  = -g -Wall
+CFLAGS  = -g -Wall -D_FILE_OFFSET_BITS=64 -D FUSE_USE_VERSION=26
 
 # typing 'make' will invoke the first target entry in the file 
 # (in this case the default target entry)
