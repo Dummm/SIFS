@@ -12,7 +12,7 @@
 #
 # for C++ define  CC = g++
 CC = gcc
-CFLAGS  = -g -Wall `pkg-config fuse --cflags --libs` -D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=26
+CFLAGS  = -g -Wall `pkg-config fuse --cflags --libs` -D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=31
 
 # typing 'make' will invoke the first target entry in the file 
 # (in this case the default target entry)
