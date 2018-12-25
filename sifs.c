@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "lib/tree.h"
+#include "lib/tar_structure.h"
 
 int populate_tree_directory(int fd, struct node *dir) {
 	struct tar_header *auxTar = malloc(sizeof(struct tar_header));
