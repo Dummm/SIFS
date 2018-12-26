@@ -1,5 +1,5 @@
-#include "tree.h"
-#include "tar_structure.h"
+#include "../lib/tree.h"
+#include "../lib/tar_structure.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
