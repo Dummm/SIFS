@@ -25,8 +25,8 @@ default: sifs
 # countwords.o, counter.o, and scanner.o:
 #
 
-sifs:  sifs.o src/logger.o src/tree.o
-	$(CC) $(CFLAGS) -o sifs src/logger.o src/tree.o sifs.o
+sifs:  sifs.o src/logger.o src/tree.o src/getattr.o
+	$(CC) $(CFLAGS) -o sifs src/logger.o src/tree.o src/getattr.o sifs.o
 
 # To create the object file countwords.o, we need the source
 # files countwords.c, scanner.h, and counter.h:
@@ -40,8 +40,12 @@ logger.o:  src/logger.c lib/logger.h
 tree.o:  src/tree.c lib/tree.h
 	$(CC) $(CFLAGS) -c tree.c
 
+getattr.o: src/getattr.c lib/getattr.h
+	$(CC) $(CFLAGS) -c sifs.c
+
 sifs.o: sifs.c lib/tar_structure.h
 	$(CC) $(CFLAGS) -c sifs.c
+
 
 # To start over from scratch, type 'make clean'.  This
 # removes the executable file, as well as old .o object

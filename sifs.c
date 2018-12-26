@@ -19,7 +19,7 @@
 #include <sys/stat.h>
 
 // #include "lib/destroy.h"
-// #include "lib/getattr.h"
+#include "lib/getattr.h"
 // #include "lib/fgetattr.h"
 // #include "lib/access.h"
 // #include "lib/readlink.h"
@@ -49,7 +49,7 @@
 // #include "lib/lock.h"
 
 #include "lib/logger.h"
-#include "lib/tree.h"
+//#include "lib/tree.h"
 #include "lib/tar_structure.h"
 #include <fuse.h>
 
@@ -185,9 +185,9 @@ void* sifs_init(struct fuse_conn_info* conn) {
 }
 
 static struct fuse_operations sifs_oper = {
-  .init 				= sifs_init
+  .init 				= sifs_init,
   // .destroy 		= sifs_destroy,
-  // .getattr 		= sifs_getattr,
+  .getattr 			= sifs_getattr
   // .fgetattr 		= sifs_fgetattr,
   // .access 			= sifs_access,
   // .readlink 		= sifs_readlink,
