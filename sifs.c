@@ -1,3 +1,11 @@
+/**
+	Build:
+		make
+	Run:
+		./sifs -f [file-path] [tar-path]
+		./sifs -f ./test ../Tars/testTar.tar
+*/
+
 //#define FUSE_USE_VERSION 26
 
 #include <stdlib.h>
@@ -141,7 +149,7 @@ int populate_tree_directory(int fd, struct node *dir) {
 }
 // Function that prints tree
 void print_tree(struct node *n) {
-	printf("%s\n", n->header->name);
+	logger(DEBUG, "\t%s\n", n->header->name);
 
 	int i;
 	for (i = 0; i < n->children_size; i++) {
@@ -165,8 +173,12 @@ void* sifs_init(struct fuse_conn_info* conn) {
 
 	// Creating tree for directory structure
 	populate_tree_directory(fd, root);
-
 	logger(DEBUG, "[init] Created directory tree\n");
+
+	logger(DEBUG, "[init] Tar directory structure:\n");
+	print_tree(root);
+
+
   logger(DEBUG, "[init] Ended\n");
 	// Tree will be memorized in the context (fuse_get_context)
 	return root;
