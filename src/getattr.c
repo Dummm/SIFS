@@ -28,11 +28,7 @@ struct node* get_node_from_path(struct node* n, const char* path) {
 	return NULL;
 }
 
-int _sifs_getattr(const char* path, struct stat* sbuf) {
-	return -1;
-}
-
-int sifs_getattr(const char* path, struct stat* sbuf) {
+int sifs_getattr(const char* path, struct stat* sbuf, struct fuse_file_info* fi) {
   logger(DEBUG, "[getattr] Started on path: %s\n", path);
 	/*
 	char *aux;
@@ -41,13 +37,8 @@ int sifs_getattr(const char* path, struct stat* sbuf) {
 	strcpy(aux + 1, path);
 	stat(aux, sbuf);
 	//return 0;
-*/
-	/*
-	if (strcmp(path, "/") == 0) {
-		stat("./", sbuf);
-		return -1;
-	}
 	*/
+
 	struct fuse_context* context;
 	context = fuse_get_context();
 

@@ -2,11 +2,11 @@
 
 int sifs_readdir(
   const char* path, void* buf, fuse_fill_dir_t filler, off_t offset,
-  struct fuse_file_info* fi
+  struct fuse_file_info* fi, enum fuse_readdir_flags flags
 ) {
 	if (strcmp(path, "/") != 0)
 		return -1;
-		
+
 	filler(buf, ".", NULL, 0, 0);
 	filler(buf, "..", NULL, 0, 0);
 	struct fuse_context* context;

@@ -13,6 +13,7 @@ int sifs_readdir(
     void*,
     fuse_fill_dir_t,
     off_t,
-    struct fuse_file_info*
+    struct fuse_file_info*,
+		enum fuse_readdir_flags
 );
 #endif

@@ -157,7 +157,7 @@ void print_tree(struct node *n) {
 	}
 }
 
-void* sifs_init(struct fuse_conn_info* conn) {
+void* sifs_init(struct fuse_conn_info* conn, struct fuse_config* cfg) {
   logger(DEBUG, "[init] Started\n");
 
 	// Creating root
