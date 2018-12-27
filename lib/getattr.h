@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <stdlib.h>
+#include <errno.h>
 #include <fuse.h>
 #include "tree.h"
 #include "logger.h"

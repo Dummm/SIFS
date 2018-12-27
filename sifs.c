@@ -168,8 +168,20 @@ void* sifs_init(struct fuse_conn_info* conn) {
 	root->file = NULL;
 
 	// Adding root folder path
+	struct stat s;
+	fstat(fd, &s);
+
 	root->header = malloc(sizeof(struct tar_header));
 	strcpy(root->header->name, "./");
+	sprintf(root->header->mode, "%u", s.st_mode);
+	sprintf(root->header->uid, "%u", s.st_uid);
+	sprintf(root->header->gid, "%u", s.st_gid);
+	strcpy(root->header->chksum, "00000000");
+	strcpy(root->header->typeflag, "5");
+	sprintf(root->header->size, "%ld", s.st_size);
+ 	sprintf(root->header->mtime, "%ld", s.st_mtime);
+ 	sprintf(root->header->atime, "%ld", s.st_atime);
+	sprintf(root->header->ctime, "%ld", s.st_ctime);
 
 	// Creating tree for directory structure
 	populate_tree_directory(fd, root);
