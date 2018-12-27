@@ -41,7 +41,7 @@ tree.o:  src/tree.c lib/tree.h
 	$(CC) $(CFLAGS) -c tree.c
 
 getattr.o: src/getattr.c lib/getattr.h
-	$(CC) $(CFLAGS) -c sifs.c
+	$(CC) $(CFLAGS) -c getattr.c
 
 sifs.o: sifs.c lib/tar_structure.h
 	$(CC) $(CFLAGS) -c sifs.c

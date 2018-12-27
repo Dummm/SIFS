@@ -6,6 +6,7 @@
 *.ko
 *.obj
 *.elf
+sifs
 
 # Linker output
 *.ilk
@@ -56,3 +57,4 @@ dkms.conf
 *.tar.*
 =======
 *.tar
+

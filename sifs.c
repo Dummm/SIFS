@@ -49,7 +49,7 @@
 // #include "lib/lock.h"
 
 #include "lib/logger.h"
-//#include "lib/tree.h"
+#include "lib/tree.h"
 #include "lib/tar_structure.h"
 #include <fuse.h>
 
@@ -222,12 +222,12 @@ int main(int argc, char **argv) {
   set_log_output(stdout);
 
 	// Opening file
-	if ((fd = open(argv[3], O_RDONLY)) == -1) {
-		logger(DEBUG, "[main] File open error(%s): %d\n", argv[1], errno);
+	if ((fd = open(argv[argc - 1], O_RDONLY)) == -1) {
+		logger(DEBUG, "[main] File open error(%s): %d\n", argv[argc - 1], errno);
 		return -1;
 	}
 	else {
-		logger(DEBUG, "[main] Opened file: %s\n", argv[3]);
+		logger(DEBUG, "[main] Opened file: %s\n", argv[argc - 1]);
 	}
 
 	// Moving reading head to beginning of file
