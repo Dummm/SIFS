@@ -20,6 +20,7 @@ struct node* get_node_from_path(struct node* n, const char* path) {
 				break;
 			}
 		}
+		break;
 	}
 	if (strcmp(n->header->name + 1, path) == 0)
 		return n;
@@ -33,13 +34,14 @@ int _sifs_getattr(const char* path, struct stat* sbuf) {
 
 int sifs_getattr(const char* path, struct stat* sbuf) {
   logger(DEBUG, "[getattr] Started on path: %s\n", path);
+	/*
 	char *aux;
 	aux = malloc(strlen(path) + 2);
 	aux[0] = '.'; aux[1] = '\0';
 	strcpy(aux + 1, path);
 	stat(aux, sbuf);
 	//return 0;
-
+*/
 	/*
 	if (strcmp(path, "/") == 0) {
 		stat("./", sbuf);
@@ -51,32 +53,31 @@ int sifs_getattr(const char* path, struct stat* sbuf) {
 
 	struct node* root;
 	root = (struct node*)context->private_data;
-	//logger(DEBUG, "[getattr] %s\n", root->header->name);
 
 	struct node* n;
 	n = get_node_from_path(root, path);
+	if (n == NULL) return -ENOENT;
 
-	//sbuf->st_dev = 0;
-	//sbuf->st_rdev = 0;
-	//sbuf->st_blocks = 0;
-	//// The 'st_dev' and 'st_blksize' fields are ignored.
-	//// The 'st_ino' field is ignored except if the 'use_ino' mount option is given
-	//sbuf->st_mode 		= strtoul(n->header->mode, NULL, 10);/* protection */
-	//sbuf->st_nlink		= n->children_size;/* number of hard links */
+	sbuf->st_dev = 0;
+	sbuf->st_rdev = 0;
+	sbuf->st_blocks = 0;
+	// The 'st_dev' and 'st_blksize' fields are ignored.
+	// The 'st_ino' field is ignored except if the 'use_ino' mount option is given
+	//sbuf->st_mode = strtoul(n->header->mode, NULL, 10);
+	//sbuf->st_mode ^= 1UL << 15;
+	sbuf->st_mode = ((strtoul(n->header->typeflag, NULL, 10) == 5) ? S_IFDIR : S_IFREG) | S_IRWXU  | S_IRWXG | S_IRWXO;
+	//logger(DEBUG, "[getattr] mode: %o\n", sbuf->st_mode);
+	//logger(DEBUG, "[getattr] mode: %o\n", S_IFDIR | S_IRWXU  | S_IRWXG | S_IRWXO );
 
-	//sbuf->st_uid			= strtoul(n->header->uid, NULL, 10);    /* user ID of owner */
-	////memcpy(sbuf->st_uid, n->header->uid, sizeof(uid_t));
+	sbuf->st_nlink		= n->children_size;/* number of hard links */
+	sbuf->st_uid			= strtoul(n->header->uid, NULL, 10);    /* user ID of owner */
 
-	//sbuf->st_gid			= strtoul(n->header->gid, NULL, 10);    /* group ID of owner */
-	////sbuf->st_rdev			= n->header->;    /* device ID (if special file) */
-	//sbuf->st_size			= strtol(n->header->size, NULL, 8);    /* total size, in bytes */
-	//sbuf->st_blksize = 4096; 		/* blocksize for file system I/O */
-	////sbuf->st_blocks		= n->header->;  	/* number of 512B blocks allocated */
-	//sbuf->st_atime		= strtol(n->header->atime, NULL, 10);   	/* time of last access */
-	//sbuf->st_mtime		= strtol(n->header->mtime, NULL, 10);   	/* time of last modification */
-	//sbuf->st_ctime		= strtol(n->header->ctime, NULL, 10);   	/* time of last status change */
-	////int ret;
-	////ret =	_sifs_getattr(path, sbuf);
+	sbuf->st_gid			= strtoul(n->header->gid, NULL, 10);    /* group ID of owner */
+	sbuf->st_size			= strtol(n->header->size, NULL, 10);    /* total size, in bytes */
+	sbuf->st_blksize = 4096; 		/* blocksize for file system I/O */
+	sbuf->st_atime		= strtol(n->header->atime, NULL, 10);   	/* time of last access */
+	sbuf->st_mtime		= strtol(n->header->mtime, NULL, 10);   	/* time of last modification */
+	sbuf->st_ctime		= strtol(n->header->ctime, NULL, 10);   	/* time of last status change */
 
   logger(DEBUG, "[getattr] Ended\n");
   return 0;
