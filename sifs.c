@@ -23,8 +23,8 @@
 // #include "lib/fgetattr.h"
 // #include "lib/access.h"
 // #include "lib/readlink.h"
-// #include "lib/opendir.h"
-// #include "lib/readdir.h"
+ #include "lib/opendir.h"
+ #include "lib/readdir.h"
 // #include "lib/mknod.h"
 // #include "lib/mkdir.h"
 // #include "lib/unlink.h"
@@ -187,12 +187,12 @@ void* sifs_init(struct fuse_conn_info* conn) {
 static struct fuse_operations sifs_oper = {
   .init 				= sifs_init,
   // .destroy 		= sifs_destroy,
-  .getattr 			= sifs_getattr
+  .getattr 			= sifs_getattr,
   // .fgetattr 		= sifs_fgetattr,
   // .access 			= sifs_access,
   // .readlink 		= sifs_readlink,
-  // .opendir 		= sifs_opendir,
-  // .readdir 		= sifs_readdir,
+  .opendir 		= sifs_opendir,
+  .readdir 		= sifs_readdir
   // .mknod 			= sifs_mknod,
   // .mkdir 			= sifs_mkdir,
   // .unlink 			= sifs_unlink,
