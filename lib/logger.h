@@ -1,5 +1,6 @@
 #ifndef LOGGING_HEADERS
 #define LOGGING_HEADERS
+
 #include <stdio.h>
 enum log_level_t { DEBUG, WARN, ERROR, OFF };
 typedef enum log_level_t log_level;

@@ -1,3 +1,11 @@
+/**
+	Build:
+		make
+	Run:
+		./sifs -f [file-path] [tar-path]
+		./sifs -f ./test ../Tars/testTar.tar
+*/
+
 //#define FUSE_USE_VERSION 26
 
 #include <stdlib.h>
@@ -11,12 +19,12 @@
 #include <sys/stat.h>
 
 // #include "lib/destroy.h"
-// #include "lib/getattr.h"
+#include "lib/getattr.h"
 // #include "lib/fgetattr.h"
 // #include "lib/access.h"
 // #include "lib/readlink.h"
-// #include "lib/opendir.h"
-// #include "lib/readdir.h"
+ #include "lib/opendir.h"
+ #include "lib/readdir.h"
 // #include "lib/mknod.h"
 #include "lib/mkdir.h"
 // #include "lib/unlink.h"
@@ -141,7 +149,7 @@ int populate_tree_directory(int fd, struct node *dir) {
 }
 // Function that prints tree
 void print_tree(struct node *n) {
-	printf("%s\n", n->header->name);
+	logger(DEBUG, "\t%s\n", n->header->name);
 
 	int i;
 	for (i = 0; i < n->children_size; i++) {
@@ -160,14 +168,31 @@ void* sifs_init(struct fuse_conn_info* conn) {
 	root->file = NULL;
 
 	// Adding root folder path
+	struct stat s;
+	fstat(fd, &s);
+
 	root->header = malloc(sizeof(struct tar_header));
 	strcpy(root->header->name, "./");
+	sprintf(root->header->mode, "%u", s.st_mode);
+	sprintf(root->header->uid, "%u", s.st_uid);
+	sprintf(root->header->gid, "%u", s.st_gid);
+	strcpy(root->header->chksum, "00000000");
+	strcpy(root->header->typeflag, "5");
+	sprintf(root->header->size, "%ld", s.st_size);
+ 	sprintf(root->header->mtime, "%ld", s.st_mtime);
+ 	sprintf(root->header->atime, "%ld", s.st_atime);
+	sprintf(root->header->ctime, "%ld", s.st_ctime);
 
 	// Creating tree for directory structure
 	populate_tree_directory(fd, root);
-
 	logger(DEBUG, "[init] Created directory tree\n");
-	logger(DEBUG, "[init] Ended\n");
+
+	logger(DEBUG, "[init] Tar directory structure:\n");
+	print_tree(root);
+
+
+  logger(DEBUG, "[init] Ended\n");
+
 	// Tree will be memorized in the context (fuse_get_context)
 	return root;
 }
@@ -175,12 +200,12 @@ void* sifs_init(struct fuse_conn_info* conn) {
 static struct fuse_operations sifs_oper = {
   .init 				= sifs_init,
   // .destroy 		= sifs_destroy,
-  // .getattr 		= sifs_getattr,
+  .getattr 			= sifs_getattr,
   // .fgetattr 		= sifs_fgetattr,
   // .access 			= sifs_access,
   // .readlink 		= sifs_readlink,
-  // .opendir 		= sifs_opendir,
-  // .readdir 		= sifs_readdir,
+  .opendir 		= sifs_opendir,
+  .readdir 		= sifs_readdir
   // .mknod 			= sifs_mknod,
    .mkdir 			= sifs_mkdir,
   // .unlink 			= sifs_unlink,
@@ -210,12 +235,12 @@ int main(int argc, char **argv) {
   set_log_output(stdout);
 
 	// Opening file
-	if ((fd = open(argv[3], O_RDONLY)) == -1) {
-		logger(DEBUG, "[main] File open error(%s): %d\n", argv[1], errno);
+	if ((fd = open(argv[argc - 1], O_RDONLY)) == -1) {
+		logger(DEBUG, "[main] File open error(%s): %d\n", argv[argc - 1], errno);
 		return -1;
 	}
 	else {
-		logger(DEBUG, "[main] Opened file: %s\n", argv[3]);
+		logger(DEBUG, "[main] Opened file: %s\n", argv[argc - 1]);
 	}
 
 	// Moving reading head to beginning of file

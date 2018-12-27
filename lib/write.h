@@ -1,0 +1,7 @@
+#ifndef write_h
+#define write_h
+#include "./logger.h" /* logger */
+#include <fuse.h> /* fuse_file_info */
+int sifs_write(const char*, const char*, size_t, off_t, struct fuse_file_info*);
+#endif
+

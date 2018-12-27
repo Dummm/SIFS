@@ -5,6 +5,8 @@
  *
  * https://www.gnu.org/software/tar/manual/html_node/Standard.html
  */
+#ifndef tar_structure_h
+#define tar_structure_h
 
 struct tar_archive{
 	char archive_name[50];
@@ -51,3 +53,4 @@ struct tar_header {// byte offset
   char mfill[8];        // 500
   char xmagic[4];       // 508  "tar"
 };
+#endif
