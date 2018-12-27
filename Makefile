@@ -28,6 +28,7 @@ default: sifs
 sifs:  sifs.o src/logger.o src/tree.o src/getattr.o src/readdir.o src/opendir.o
 	$(CC) $(CFLAGS) -o sifs src/logger.o src/tree.o src/getattr.o src/readdir.o src/opendir.o sifs.o
 
+
 # To create the object file countwords.o, we need the source
 # files countwords.c, scanner.h, and counter.h:
 #
@@ -39,6 +40,9 @@ logger.o:  src/logger.c lib/logger.h
 #
 tree.o:  src/tree.c lib/tree.h
 	$(CC) $(CFLAGS) -c tree.c
+	
+mkdir.o: src/mkdir.c lib/mkdir.h
+	$(CC) $(CFLAGS) -c mkdir.c
 
 getattr.o: src/getattr.c lib/getattr.h
 	$(CC) $(CFLAGS) -c getattr.c

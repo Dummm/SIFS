@@ -26,7 +26,7 @@
  #include "lib/opendir.h"
  #include "lib/readdir.h"
 // #include "lib/mknod.h"
-// #include "lib/mkdir.h"
+#include "lib/mkdir.h"
 // #include "lib/unlink.h"
 // #include "lib/rmdir.h"
 // #include "lib/symlink.h"
@@ -192,6 +192,7 @@ void* sifs_init(struct fuse_conn_info* conn) {
 
 
   logger(DEBUG, "[init] Ended\n");
+
 	// Tree will be memorized in the context (fuse_get_context)
 	return root;
 }
@@ -206,7 +207,7 @@ static struct fuse_operations sifs_oper = {
   .opendir 		= sifs_opendir,
   .readdir 		= sifs_readdir
   // .mknod 			= sifs_mknod,
-  // .mkdir 			= sifs_mkdir,
+   .mkdir 			= sifs_mkdir,
   // .unlink 			= sifs_unlink,
   // .rmdir 			= sifs_rmdir,
   // .symlink 		= sifs_symlink,
