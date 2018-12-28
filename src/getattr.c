@@ -42,7 +42,7 @@ struct node* get_node_from_path(struct node* n, const char* path) {
 		else modified = 0;
 	}
 
-	if (strcmp(aux->header->name, n->header->name) == 0) {
+	if ((strcmp(aux->header->name, n->header->name) == 0) && !modified) {
 		logger(DEBUG, "[getattr/get_node_from_path] Node not found\n");
 		return NULL;
 	}
