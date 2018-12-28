@@ -16,6 +16,7 @@ struct node* get_node_from_path(struct node* n, const char* path) {
 		return aux;
 	}
 
+	int modified = 0;
 	while (
 	(aux->header->name[strlen(aux->header->name) - 1] == '/') ?
 	(strncmp(aux->header->name + 1, path, strlen(aux->header->name + 1) - 1) == 0) :
@@ -33,10 +34,12 @@ struct node* get_node_from_path(struct node* n, const char* path) {
 			(strncmp(aux->children[i]->header->name + 1, path, strlen(aux->children[i]->header->name + 1)) == 0)
 			) {
 				aux = aux->children[i];
+				modified = 1;
 				break;
 			}
 		}
-		break;
+		if(!modified) break;
+		else modified = 0;
 	}
 
 	if (strcmp(aux->header->name, n->header->name) == 0) {
