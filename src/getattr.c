@@ -39,18 +39,17 @@ struct node* get_node_from_path(struct node* n, const char* path) {
 		break;
 	}
 
+	if (strcmp(aux->header->name, n->header->name) == 0) {
+		logger(DEBUG, "[getattr/get_node_from_path] Node not found\n");
+		return NULL;
+	}
+
 	if (
 	(aux->header->name[strlen(aux->header->name) - 1] == '/') ?
 	(strncmp(aux->header->name + 1, path, strlen(aux->header->name + 1) - 1) == 0) :
 	(strncmp(aux->header->name + 1, path, strlen(aux->header->name + 1)) == 0)
 	) {
 		logger(DEBUG, "[getattr/get_node_from_path] Node found: %s\n", aux->header->name);
-		logger(DEBUG, "\t%d\t%s\n", strlen(aux->header->name), aux->header->name);
-		logger(DEBUG, "\t%d\t%s\n", strlen(path), path);
-		logger(DEBUG, "\tdir?: %d\n", (aux->header->name[strlen(aux->header->name) - 1] == '/'));
-		logger(DEBUG, "\tfile?: %d\n", !(aux->header->name[strlen(aux->header->name) - 1] == '/'));
-
-
 		return aux;
 	}
 
@@ -77,9 +76,8 @@ int sifs_getattr(const char* path, struct stat* sbuf, struct fuse_file_info* fi)
 
 	struct node* n;
 	n = get_node_from_path(root, path);
-	logger(DEBUG, "[getattr] \tNode returned: %s\n", n->header->name);
-
 	if (n == NULL) return -ENOENT;
+	logger(DEBUG, "[getattr] \tNode returned: %s\n", n->header->name);
 
 	sbuf->st_dev = 0;
 	sbuf->st_rdev = 0;
