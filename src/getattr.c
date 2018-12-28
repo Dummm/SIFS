@@ -34,7 +34,7 @@ int sifs_getattr(const char* path, struct stat* sbuf, struct fuse_file_info* fi)
 	// The 'st_ino' field is ignored except if the 'use_ino' mount option is given
 	//sbuf->st_mode = strtoul(n->header->mode, NULL, 10);
 	//sbuf->st_mode ^= 1UL << 15;
-	sbuf->st_mode = ((strtoul(n->header->typeflag, NULL, 10) == 5) ? S_IFDIR : S_IFREG) | S_IRWXU  | S_IRWXG | S_IRWXO;
+	sbuf->st_mode 		= ((strtoul(n->header->typeflag, NULL, 10) == 5) ? S_IFDIR : S_IFREG) | S_IRWXU  | S_IRWXG | S_IRWXO;
 	//logger(DEBUG, "[getattr] mode: %o\n", sbuf->st_mode);
 	//logger(DEBUG, "[getattr] mode: %o\n", S_IFDIR | S_IRWXU  | S_IRWXG | S_IRWXO );
 
@@ -42,8 +42,8 @@ int sifs_getattr(const char* path, struct stat* sbuf, struct fuse_file_info* fi)
 	sbuf->st_uid			= strtoul(n->header->uid, NULL, 10);    /* user ID of owner */
 
 	sbuf->st_gid			= strtoul(n->header->gid, NULL, 10);    /* group ID of owner */
-	sbuf->st_size			= strtol(n->header->size, NULL, 10);    /* total size, in bytes */
-	sbuf->st_blksize = 4096; 		/* blocksize for file system I/O */
+	sbuf->st_size			= strtol(n->header->size, NULL, 8);    /* total size, in bytes */
+	sbuf->st_blksize 	= 4096; 		/* blocksize for file system I/O */
 	sbuf->st_atime		= strtol(n->header->atime, NULL, 10);   	/* time of last access */
 	sbuf->st_mtime		= strtol(n->header->mtime, NULL, 10);   	/* time of last modification */
 	sbuf->st_ctime		= strtol(n->header->ctime, NULL, 10);   	/* time of last status change */

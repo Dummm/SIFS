@@ -42,7 +42,7 @@ int sifs_readdir(
 		else {
 			filler(buf, buffer, NULL, 0, 0);
 		}
-		logger(DEBUG,"[readdir] Buffer: %s\n", buffer);
+		logger(DEBUG, LOG_BOLD LOG_FG_GREEN "[readdir] Buffer: %s\n" LOG_RESET , buffer);
 	}
 
 	logger(DEBUG, "[readdir] Ended\n");

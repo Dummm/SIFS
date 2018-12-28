@@ -1,5 +1,18 @@
 #include "../lib/mkdir.h"
 
+unsigned int generate_checksum(const struct tar_header* h) {
+	unsigned int i;
+	unsigned char *p = (unsigned char*) h;
+	unsigned int res = 256;
+	for (i = 0; i < offsetof(struct tar_header, chksum); i++) {
+		res += p[i];
+	}
+	for (i = offsetof(struct tar_header, typeflag); i < sizeof(*h); i++) {
+		res += p[i];
+	}
+	return res;
+}
+
 int sifs_mkdir(const char* path, mode_t mode) {
   logger(
     ERROR,
@@ -36,23 +49,34 @@ int sifs_mkdir(const char* path, mode_t mode) {
 	n->children_size = 0;
 	n->file = NULL;
 
-	/*
-	// Adding root folder path
-	struct stat s;
-	fstat(fd, &s);
-
+	// Adding node metadata
 	n->header = malloc(sizeof(struct tar_header));
-	strcpy(n->header->name, "./");
-	sprintf(n->header->mode, "%u", s.st_mode);
-	sprintf(n->header->uid, "%u", s.st_uid);
-	sprintf(n->header->gid, "%u", s.st_gid);
-	strcpy(n->header->chksum, "00000000");
+
+	n->header->name[0] = '.';
+	strcpy(n->header->name + 1, path);
+	n->header->name[strlen(path) + 1] = '/';
+	logger(DEBUG, LOG_BOLD LOG_FG_RED "[mkdir] New node name: %s\n" LOG_RESET, n->header->name);
+
+	sprintf(n->header->mode, "%u", mode | S_IFDIR);
+	sprintf(n->header->uid, "%u", getuid());
+	sprintf(n->header->gid, "%u", getgid());
 	strcpy(n->header->typeflag, "5");
-	sprintf(n->header->size, "%ld", s.st_size);
- 	sprintf(n->header->mtime, "%ld", s.st_mtime);
- 	sprintf(n->header->atime, "%ld", s.st_atime);
-	sprintf(n->header->ctime, "%ld", s.st_ctime);
-	*/
+	sprintf(n->header->size, "%d", 0);
+
+	time_t t;
+	t = time(NULL);
+ 	sprintf(n->header->mtime, "%ld", t);
+ 	sprintf(n->header->atime, "%ld", t);
+	sprintf(n->header->ctime, "%ld", t);
+
+	sprintf(n->header->chksum, "%d", generate_checksum(n->header));
+
+	struct node **auxDirChildren;
+	parent->children_size++;
+	auxDirChildren = realloc(parent->children, parent->children_size * sizeof(struct node*));
+	parent->children = auxDirChildren;
+	parent->children[parent->children_size - 1] = n;
+
 	logger(DEBUG, LOG_BOLD LOG_FG_RED "[mkdir] Ended\n" LOG_RESET);
   return 0;
 }
