@@ -1,0 +1,13 @@
+#include "../lib/write.h"
+
+int sifs_write(
+    const char* path,
+    const char *buf,
+    size_t size,
+    off_t offset,
+    struct fuse_file_info* fi
+) {
+  logger(ERROR, "UNIMPLEMENTED: write, path: %s\n", path);
+  return -1;
+}
+

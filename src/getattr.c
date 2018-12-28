@@ -7,32 +7,57 @@
 struct node* get_node_from_path(struct node* n, const char* path) {
 	// +1 to remove . from filename
 
-	// Node has the same path
-	if (strcmp(n->header->name + 1, path) == 0)
-		return n;
+	struct node* aux;
+	aux = n;
 
-	while (strncmp(n->header->name + 1, path, strlen(n->header->name + 1)) == 0) {
-		logger(DEBUG, "[getattr/get_node_from_path] Current node: %s\n", n->header->name + 1);
+	// Root
+	if (strcmp(aux->header->name + 1, path) == 0) {
+		logger(DEBUG, "[getattr/get_node_from_path] Node found: %s\n", aux->header->name);
+		return aux;
+	}
+
+	while (
+	(aux->header->name[strlen(aux->header->name) - 1] == '/') ?
+	(strncmp(aux->header->name + 1, path, strlen(aux->header->name + 1) - 1) == 0) :
+	(strncmp(aux->header->name + 1, path, strlen(aux->header->name + 1)) == 0)
+	) {
+		logger(DEBUG, "[getattr/get_node_from_path] Current node: %s\n", aux->header->name + 1);
+		logger(DEBUG, "[getattr/get_node_from_path] Children: %d\n", aux->children_size);
+
 		int i;
-		for(i = 0; i < n->children_size; i++) {
-			if (strncmp(n->children[i]->header->name + 1, path, strlen(n->children[i]->header->name + 1)) == 0) {
-				n = n->children[i];
+		for(i = 0; i < aux->children_size; i++) {
+			logger(DEBUG, "[getattr/get_node_from_path] \tTrying node: %s\n", aux->children[i]->header->name + 1);
+			if (
+			(aux->children[i]->header->name[strlen(aux->children[i]->header->name) - 1] == '/') ?
+			(strncmp(aux->children[i]->header->name + 1, path, strlen(aux->children[i]->header->name + 1) - 1) == 0) :
+			(strncmp(aux->children[i]->header->name + 1, path, strlen(aux->children[i]->header->name + 1)) == 0)
+			) {
+				aux = aux->children[i];
 				break;
 			}
 		}
 		break;
 	}
-	if (strcmp(n->header->name + 1, path) == 0)
-		return n;
 
+	if (strcmp(aux->header->name, n->header->name) == 0) {
+		logger(DEBUG, "[getattr/get_node_from_path] Node not found\n");
+		return NULL;
+	}
+
+	if (
+	(aux->header->name[strlen(aux->header->name) - 1] == '/') ?
+	(strncmp(aux->header->name + 1, path, strlen(aux->header->name + 1) - 1) == 0) :
+	(strncmp(aux->header->name + 1, path, strlen(aux->header->name + 1)) == 0)
+	) {
+		logger(DEBUG, "[getattr/get_node_from_path] Node found: %s\n", aux->header->name);
+		return aux;
+	}
+
+	logger(DEBUG, "[getattr/get_node_from_path] Node not found\n");
 	return NULL;
 }
 
-int _sifs_getattr(const char* path, struct stat* sbuf) {
-	return -1;
-}
-
-int sifs_getattr(const char* path, struct stat* sbuf) {
+int sifs_getattr(const char* path, struct stat* sbuf, struct fuse_file_info* fi) {
   logger(DEBUG, "[getattr] Started on path: %s\n", path);
 	/*
 	char *aux;
@@ -41,13 +66,8 @@ int sifs_getattr(const char* path, struct stat* sbuf) {
 	strcpy(aux + 1, path);
 	stat(aux, sbuf);
 	//return 0;
-*/
-	/*
-	if (strcmp(path, "/") == 0) {
-		stat("./", sbuf);
-		return -1;
-	}
 	*/
+
 	struct fuse_context* context;
 	context = fuse_get_context();
 
@@ -57,6 +77,7 @@ int sifs_getattr(const char* path, struct stat* sbuf) {
 	struct node* n;
 	n = get_node_from_path(root, path);
 	if (n == NULL) return -ENOENT;
+	logger(DEBUG, "[getattr] \tNode returned: %s\n", n->header->name);
 
 	sbuf->st_dev = 0;
 	sbuf->st_rdev = 0;
