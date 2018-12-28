@@ -8,23 +8,32 @@ struct node* get_node_from_path(struct node* n, const char* path) {
 	// +1 to remove . from filename
 
 	// Node has the same path
-	if (strcmp(n->header->name + 1, path) == 0)
+	if (strcmp(n->header->name + 1, path) == 0) {
+		logger(DEBUG, "[getattr/get_node_from_path] Node found: %s\n", n->header->name);
 		return n;
+	}
 
-	while (strncmp(n->header->name + 1, path, strlen(n->header->name + 1)) == 0) {
+	// DE REPARAT, POATE, BOSS: Ultimul char poate fi / la directoare. Fa-l mai frumos
+	while (strncmp(n->header->name + 1, path, strlen(n->header->name + 1) - 1) == 0) {
 		logger(DEBUG, "[getattr/get_node_from_path] Current node: %s\n", n->header->name + 1);
+		logger(DEBUG, "[getattr/get_node_from_path] Children: %d\n", n->children_size);
+
 		int i;
 		for(i = 0; i < n->children_size; i++) {
-			if (strncmp(n->children[i]->header->name + 1, path, strlen(n->children[i]->header->name + 1)) == 0) {
+			logger(DEBUG, "[getattr/get_node_from_path] \tTrying node: %s\n", n->children[i]->header->name + 1);
+			if (strncmp(n->children[i]->header->name + 1, path, strlen(n->children[i]->header->name + 1) - 1) == 0) {
 				n = n->children[i];
 				break;
 			}
 		}
 		break;
 	}
-	if (strcmp(n->header->name + 1, path) == 0)
+	if (strncmp(n->header->name + 1, path, strlen(n->header->name + 1) - 1) == 0) {
+		logger(DEBUG, "[getattr/get_node_from_path] Node found: %s\n", n->header->name);
 		return n;
+	}
 
+	logger(DEBUG, "[getattr/get_node_from_path] Node not found\n");
 	return NULL;
 }
 

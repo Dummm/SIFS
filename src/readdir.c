@@ -23,7 +23,7 @@ int sifs_readdir(
 			buffer[ strlen(buffer) -1 ] = '\0';
 		}
 		filler(buf, buffer, NULL, 0, 0);
-		logger(DEBUG,buffer);
+		logger(DEBUG,"[readdir] Buffer: %s\n", buffer);
 	}
   return 0;
 }
