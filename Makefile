@@ -24,9 +24,24 @@ default: sifs
 # To create the executable file count we need the object files
 # countwords.o, counter.o, and scanner.o:
 #
+sifs: \
+	sifs.o \
+	src/logger.o \
+	src/tree.o \
+	src/getattr.o \
+	src/readdir.o \
+	src/opendir.o \
+	src/mkdir.o
+	$(CC) $(CFLAGS) -o \
+	sifs \
+	src/logger.o \
+	src/tree.o \
+	src/getattr.o \
+	src/readdir.o \
+	src/opendir.o \
+	src/mkdir.o \
+	sifs.o
 
-sifs:  sifs.o src/logger.o src/tree.o src/getattr.o src/readdir.o src/opendir.o
-	$(CC) $(CFLAGS) -o sifs src/logger.o src/tree.o src/getattr.o src/readdir.o src/opendir.o sifs.o
 
 # To create the object file countwords.o, we need the source
 # files countwords.c, scanner.h, and counter.h:
@@ -34,23 +49,24 @@ sifs:  sifs.o src/logger.o src/tree.o src/getattr.o src/readdir.o src/opendir.o
 logger.o:  src/logger.c lib/logger.h
 	$(CC) $(CFLAGS) -c logger.c
 
-# To create the object file counter.o, we need the source files
-# counter.c and counter.h:
-#
 tree.o:  src/tree.c lib/tree.h
 	$(CC) $(CFLAGS) -c tree.c
+
+mkdir.o: src/mkdir.c lib/mkdir.h
+	$(CC) $(CFLAGS) -c mkdir.c
 
 getattr.o: src/getattr.c lib/getattr.h
 	$(CC) $(CFLAGS) -c getattr.c
 
 readdir.o: src/readdir.c lib/readdir.h
 	$(CC) $(CFLAGS) -c readdir.c
-	
-sifs.o: sifs.c lib/tar_structure.h
-	$(CC) $(CFLAGS) -c sifs.c
 
 opendir.o: src/opendir.c lib/opendir.h
 	$(CC) $(CFLAGS) -c opendir.c
+
+sifs.o: sifs.c lib/tar_structure.h
+	$(CC) $(CFLAGS) -c sifs.c
+
 # To start over from scratch, type 'make clean'.  This
 # removes the executable file, as well as old .o object
 # files and *~ backup files:

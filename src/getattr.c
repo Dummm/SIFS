@@ -4,35 +4,8 @@
 	./sifs -f -d -o default_permissions ../tests/testFolder ../tests/tars/testTar.tar
 
 */
-struct node* get_node_from_path(struct node* n, const char* path) {
-	// +1 to remove . from filename
 
-	// Node has the same path
-	if (strcmp(n->header->name + 1, path) == 0)
-		return n;
-
-	while (strncmp(n->header->name + 1, path, strlen(n->header->name + 1)) == 0) {
-		logger(DEBUG, "[getattr/get_node_from_path] Current node: %s\n", n->header->name + 1);
-		int i;
-		for(i = 0; i < n->children_size; i++) {
-			if (strncmp(n->children[i]->header->name + 1, path, strlen(n->children[i]->header->name + 1)) == 0) {
-				n = n->children[i];
-				break;
-			}
-		}
-		break;
-	}
-	if (strcmp(n->header->name + 1, path) == 0)
-		return n;
-
-	return NULL;
-}
-
-int _sifs_getattr(const char* path, struct stat* sbuf) {
-	return -1;
-}
-
-int sifs_getattr(const char* path, struct stat* sbuf) {
+int sifs_getattr(const char* path, struct stat* sbuf, struct fuse_file_info* fi) {
   logger(DEBUG, "[getattr] Started on path: %s\n", path);
 	/*
 	char *aux;
@@ -41,13 +14,8 @@ int sifs_getattr(const char* path, struct stat* sbuf) {
 	strcpy(aux + 1, path);
 	stat(aux, sbuf);
 	//return 0;
-*/
-	/*
-	if (strcmp(path, "/") == 0) {
-		stat("./", sbuf);
-		return -1;
-	}
 	*/
+
 	struct fuse_context* context;
 	context = fuse_get_context();
 
@@ -57,6 +25,7 @@ int sifs_getattr(const char* path, struct stat* sbuf) {
 	struct node* n;
 	n = get_node_from_path(root, path);
 	if (n == NULL) return -ENOENT;
+	logger(DEBUG, "[getattr] \tNode returned: %s\n", n->header->name);
 
 	sbuf->st_dev = 0;
 	sbuf->st_rdev = 0;
