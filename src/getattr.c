@@ -42,16 +42,21 @@ struct node* get_node_from_path(struct node* n, const char* path) {
 		else modified = 0;
 	}
 
+	/*
 	if ((strcmp(aux->header->name, n->header->name) == 0) && !modified) {
 		logger(DEBUG, "[getattr/get_node_from_path] Node not found\n");
 		return NULL;
 	}
+	*/
 
+	/*
 	if (
 	(aux->header->name[strlen(aux->header->name) - 1] == '/') ?
-	(strncmp(aux->header->name + 1, path, strlen(aux->header->name + 1) - 1) == 0) :
-	(strncmp(aux->header->name + 1, path, strlen(aux->header->name + 1)) == 0)
+	(strncmp(aux->header->name + 1, path, strlen(path)) == 0) :
+	(strncmp(aux->header->name + 1, path, strlen(path)) == 0)
 	) {
+	*/
+	if (strncmp(aux->header->name + 1, path, strlen(path)) == 0) {
 		logger(DEBUG, "[getattr/get_node_from_path] Node found: %s\n", aux->header->name);
 		return aux;
 	}
