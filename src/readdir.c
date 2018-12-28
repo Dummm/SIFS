@@ -57,7 +57,7 @@ int sifs_readdir(
   const char* path, void* buf, fuse_fill_dir_t filler, off_t offset,
   struct fuse_file_info* fi, enum fuse_readdir_flags flags
 ) {
-	logger(DEBUG, "\t\t[readdir] Started on path: %s\n", path);
+	logger(DEBUG, "[readdir] Started on path: %s\n", path);
 
 	/*
 	if (strcmp(path, "/") != 0) {
@@ -95,9 +95,9 @@ int sifs_readdir(
 		else {
 			filler(buf, buffer, NULL, 0, 0);
 		}
-		logger(DEBUG,"\t[readdir] Buffer: %s\n", buffer);
+		logger(DEBUG,"[readdir] Buffer: %s\n", buffer);
 	}
 
-	logger(DEBUG, "\t[readdir] Ended\n");
+	logger(DEBUG, "[readdir] Ended\n");
   return 0;
 }
