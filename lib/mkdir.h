@@ -1,5 +1,4 @@
 #include <sys/stat.h> /* mode_t */
-#include <string.h>
 #include <stdlib.h>
 #include "logger.h" /* logger */
 #include "tree.h"

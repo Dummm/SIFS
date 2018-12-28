@@ -3,7 +3,6 @@
 #include "./logger.h" /* logger */
 #include <fuse.h> /* fuse_fill_dir_t fuse_file_info */
 #include <sys/stat.h>
-#include <string.h>
 #include <stdlib.h>
 #include <fuse.h>
 #include "tree.h"
