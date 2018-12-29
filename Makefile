@@ -31,6 +31,8 @@ sifs: \
 	src/getattr.o \
 	src/readdir.o \
 	src/opendir.o \
+	src/open.o \
+	src/read.o \
 	src/mkdir.o
 	$(CC) $(CFLAGS) -o \
 	sifs \
@@ -40,6 +42,8 @@ sifs: \
 	src/readdir.o \
 	src/opendir.o \
 	src/mkdir.o \
+	src/open.o \
+	src/read.o \
 	sifs.o
 
 
@@ -63,6 +67,12 @@ readdir.o: src/readdir.c lib/readdir.h
 
 opendir.o: src/opendir.c lib/opendir.h
 	$(CC) $(CFLAGS) -c opendir.c
+
+open.o: src/open.c lib/open.h
+	$(CC) $(CFLAGS) -c open.c
+
+read.o: src/read.c lib/read.h
+	$(CC) $(CFLAGS) -c read.c
 
 sifs.o: sifs.c lib/tar_structure.h
 	$(CC) $(CFLAGS) -c sifs.c
