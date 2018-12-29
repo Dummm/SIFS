@@ -2,7 +2,6 @@
 #define getattr_h
 
 #include <sys/stat.h>
-#include <string.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <fuse.h>
