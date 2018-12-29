@@ -37,8 +37,8 @@
 // #include "lib/truncate.h"
 // #include "lib/ftruncate.h"
 // #include "lib/utimens.h"
-// #include "lib/open.h"
-// #include "lib/read.h"
+ #include "lib/open.h"
+ #include "lib/read.h"
 // #include "lib/write.h"
 // #include "lib/statfs.h"
 // #include "lib/release.h"
@@ -207,7 +207,7 @@ static struct fuse_operations sifs_oper = {
   .opendir 			= sifs_opendir,
   .readdir 			= sifs_readdir,
   // .mknod 			= sifs_mknod,
-  .mkdir 				= sifs_mkdir
+  .mkdir 				= sifs_mkdir,
   // .unlink 			= sifs_unlink,
   // .rmdir 			= sifs_rmdir,
   // .symlink 		= sifs_symlink,
@@ -218,8 +218,8 @@ static struct fuse_operations sifs_oper = {
   // .truncate 		= sifs_truncate,
   // .ftruncate 	= sifs_ftruncate,
   // .utimens 		= sifs_utimens,
-  // .open 				= sifs_open,
-  // .read 				= sifs_read,
+  .open 				= sifs_open,
+  .read 				= sifs_read
   // .write 			= sifs_write,
   // .statfs 			= sifs_statfs,
   // .release 		= sifs_release,
