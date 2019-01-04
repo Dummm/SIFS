@@ -24,7 +24,10 @@ int sifs_getattr(const char* path, struct stat* sbuf, struct fuse_file_info* fi)
 
 	struct node* n;
 	n = get_node_from_path(root, path);
-	if (n == NULL) return -ENOENT;
+	if (n == NULL) {
+	  logger(DEBUG, "[getattr] Ended\n");
+		return -ENOENT;
+	}
 	logger(DEBUG, "[getattr] \tNode returned: %s\n", n->header->name);
 
 	sbuf->st_dev = 0;

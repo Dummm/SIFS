@@ -14,12 +14,6 @@ unsigned int generate_checksum(const struct tar_header* h) {
 }
 
 int sifs_mkdir(const char* path, mode_t mode) {
-  logger(
-    ERROR,
-    "UNIMPLEMENTED: mkdir, path: %s, mode: %lo\n",
-    path,
-    (unsigned long) mode
-  );
 	logger(DEBUG, LOG_BOLD LOG_FG_RED "[mkdir] Started on path: %s\n" LOG_RESET, path);
 	logger(DEBUG, LOG_BOLD LOG_FG_RED "[mkdir] Mode: %d\t%o\n" LOG_RESET, mode, mode);
 
@@ -33,14 +27,19 @@ int sifs_mkdir(const char* path, mode_t mode) {
 	last_slash = (strrchr(path, '/') - path);
 	logger(DEBUG, LOG_BOLD LOG_FG_RED "[mkdir] Position of last slash: %d\n" LOG_RESET, last_slash);
 
+	// Root exception
+	if(!last_slash) last_slash++;
+
 	char* parent_path;
-	parent_path = malloc((last_slash + 2) * sizeof(char));
-	strncpy(parent_path, path, last_slash + 1);
-	logger(DEBUG, LOG_BOLD LOG_FG_RED "[mkdir] Path of parent node: %s\n" LOG_RESET, parent_path);
+	parent_path = malloc((last_slash + 1) * sizeof(char));
+	strncpy(parent_path, path, last_slash);
+	parent_path[last_slash] = '\0';
+	logger(DEBUG, LOG_BOLD LOG_FG_RED "[mkdir] Path of parent node: %s-\n" LOG_RESET, parent_path);
 
 	struct node* parent;
 	parent = get_node_from_path(root, parent_path);
 	logger(DEBUG, LOG_BOLD LOG_FG_RED "[mkdir] Returned node: %s\n" LOG_RESET, parent->header->name);
+	free(parent_path);
 
 	// Creating node
 	struct node *n = malloc(sizeof(struct node));
@@ -55,6 +54,7 @@ int sifs_mkdir(const char* path, mode_t mode) {
 	n->header->name[0] = '.';
 	strcpy(n->header->name + 1, path);
 	n->header->name[strlen(path) + 1] = '/';
+	n->header->name[strlen(path) + 2] = '\0';
 	logger(DEBUG, LOG_BOLD LOG_FG_RED "[mkdir] New node name: %s\n" LOG_RESET, n->header->name);
 
 	sprintf(n->header->mode, "%u", mode | S_IFDIR);
