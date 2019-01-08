@@ -39,7 +39,7 @@
 // #include "lib/utimens.h"
  #include "lib/open.h"
  #include "lib/read.h"
-// #include "lib/write.h"
+ #include "lib/write.h"
 // #include "lib/statfs.h"
 // #include "lib/release.h"
 // #include "lib/releasedir.h"
@@ -219,8 +219,8 @@ static struct fuse_operations sifs_oper = {
   // .ftruncate 	= sifs_ftruncate,
   // .utimens 		= sifs_utimens,
   .open 				= sifs_open,
-  .read 				= sifs_read
-  // .write 			= sifs_write,
+  .read 				= sifs_read,
+ .write 			= sifs_write
   // .statfs 			= sifs_statfs,
   // .release 		= sifs_release,
   // .releasedir 	= sifs_releasedir,

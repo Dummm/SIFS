@@ -34,7 +34,8 @@ sifs: \
 	src/open.o \
 	src/read.o \
 	src/mknod.o \
-	src/mkdir.o
+	src/mkdir.o \
+	src/write.o 
 	$(CC) $(CFLAGS) -o \
 	sifs \
 	src/logger.o \
@@ -46,17 +47,22 @@ sifs: \
 	src/mknod.o \
 	src/open.o \
 	src/read.o \
+	src/write.o \
 	sifs.o
 
 
 # To create the object file countwords.o, we need the source
 # files countwords.c, scanner.h, and counter.h:
 #
+write.o:  src/write.c lib/write.h
+	$(CC) $(CFLAGS) -c write.c
+
 logger.o:  src/logger.c lib/logger.h
 	$(CC) $(CFLAGS) -c logger.c
 
 tree.o:  src/tree.c lib/tree.h
 	$(CC) $(CFLAGS) -c tree.c
+
 
 mkdir.o: src/mkdir.c lib/mkdir.h
 	$(CC) $(CFLAGS) -c mkdir.c
