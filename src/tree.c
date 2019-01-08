@@ -67,7 +67,6 @@ struct node* get_node_from_path(struct node* n, const char* path) {
 		int i;
 		for(i = 0; i < aux->children_size; i++) {
 			logger(DEBUG, "(tree/get_node_from_path) \tTrying node: %s\n", aux->children[i]->header->name);
-			logger(DEBUG, "(tree/get_node_from_path) \ttest: %c\t%c\n", path[strlen(aux->children[i]->header->name + 1)-1], (aux->children[i]->header->name + 1)[strlen(aux->children[i]->header->name + 1)-1]);
 
 			if ((
 				(aux->children[i]->header->name[strlen(aux->children[i]->header->name) - 1] == '/')

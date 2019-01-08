@@ -6,5 +6,5 @@
 #include "logger.h" /* logger */
 #include "tree.h"
 #include "fuse.h"
-int sifs_mknod(const char*, mode_t);
+int sifs_mknod(const char*, mode_t, dev_t);
 

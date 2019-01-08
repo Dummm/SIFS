@@ -13,7 +13,7 @@ unsigned int generate_checksum2(const struct tar_header* h) {
 	return res;
 }
 
-int sifs_mknod(const char* path, mode_t mode) {
+int sifs_mknod(const char* path, mode_t mode, dev_t dev) {
 	logger(DEBUG, LOG_BOLD LOG_FG_BLUE "[mknod] Started on path: %s\n" LOG_RESET, path);
 	logger(DEBUG, LOG_BOLD LOG_FG_BLUE "[mknod] Mode: %d\t%o\n" LOG_RESET, mode, mode);
 
