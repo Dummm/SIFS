@@ -33,6 +33,7 @@ sifs: \
 	src/opendir.o \
 	src/open.o \
 	src/read.o \
+	src/mknod.o \
 	src/mkdir.o
 	$(CC) $(CFLAGS) -o \
 	sifs \
@@ -42,6 +43,7 @@ sifs: \
 	src/readdir.o \
 	src/opendir.o \
 	src/mkdir.o \
+	src/mknod.o \
 	src/open.o \
 	src/read.o \
 	sifs.o
@@ -58,7 +60,7 @@ tree.o:  src/tree.c lib/tree.h
 
 mkdir.o: src/mkdir.c lib/mkdir.h
 	$(CC) $(CFLAGS) -c mkdir.c
-
+	
 getattr.o: src/getattr.c lib/getattr.h
 	$(CC) $(CFLAGS) -c getattr.c
 
@@ -73,6 +75,9 @@ open.o: src/open.c lib/open.h
 
 read.o: src/read.c lib/read.h
 	$(CC) $(CFLAGS) -c read.c
+
+mknod.o: src/mknod.c lib/mknod.h
+	$(CC) $(CFLAGS) -c mknod.c
 
 sifs.o: sifs.c lib/tar_structure.h
 	$(CC) $(CFLAGS) -c sifs.c
