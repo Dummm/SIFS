@@ -92,13 +92,12 @@ int populate_tree_directory(int fd, struct node *dir) {
 	while (read(fd, auxTar, sizeof(struct tar_header))) {
 		/// Verifying if the file we read is in the same directory
 		if (strncmp(
-			dir->header->name,
-			auxTar->name,
-			strlen(dir->header->name) - 1) != 0) {
-				free(auxTar);
-				break;
+		dir->header->name,
+		auxTar->name,
+		strlen(dir->header->name) - 1) != 0) {
+			free(auxTar);
+			break;
 		}
-		//printf("\tRead file\\directory %s\n", auxTar->name);
 
 		// Creating node
 		auxNode = malloc(sizeof(struct node));
@@ -131,8 +130,10 @@ int populate_tree_directory(int fd, struct node *dir) {
 			read(fd, auxNode->file, sz);
 
 			// Reallinging reading head
-			int pos = lseek(fd, 0, SEEK_CUR);
-			lseek(fd, 512 - (pos % 512), SEEK_CUR);
+			if(sz) {
+				int pos = lseek(fd, 0, SEEK_CUR);
+				lseek(fd, 512 - (pos % 512), SEEK_CUR);
+			}
 		}
 
 		auxTar = malloc(sizeof(struct tar_header));
@@ -261,10 +262,10 @@ int main(int argc, char **argv) {
 	int ret;
 	ret = fuse_main(args.argc, args.argv, &sifs_oper, NULL);
 	fuse_opt_free_args(&args);
-	
+
 	close(fd);
 
 	logger(DEBUG, "[main] Ended\n");
-	
+
 	return ret;
 }

@@ -21,7 +21,7 @@ void sifs_destroy(void* private_data) {
 	//lseek(fd, 0, SEEK_SET); /* move to the beginning of file */
 		//~ printf("FAILED!!!");
 	//~ }
-	struct node* parent, root;
+	struct node* parent;
 	parent = get_node_from_path(private_data,"/");
 	print_tree2(parent);
 }
