@@ -35,6 +35,7 @@ sifs: \
 	src/read.o \
 	src/mknod.o \
 	src/mkdir.o \
+	src/destroy.o \
 	src/write.o 
 	$(CC) $(CFLAGS) -o \
 	sifs \
@@ -48,6 +49,7 @@ sifs: \
 	src/open.o \
 	src/read.o \
 	src/write.o \
+	src/destroy.o \
 	sifs.o
 
 
@@ -84,6 +86,9 @@ read.o: src/read.c lib/read.h
 
 mknod.o: src/mknod.c lib/mknod.h
 	$(CC) $(CFLAGS) -c mknod.c
+	
+destroy.o: src/destroy.c lib/destroy.h
+	$(CC) $(CFLAGS) -c destroy.c
 
 sifs.o: sifs.c lib/tar_structure.h
 	$(CC) $(CFLAGS) -c sifs.c

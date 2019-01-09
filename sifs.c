@@ -18,7 +18,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-// #include "lib/destroy.h"
+#include "lib/destroy.h"
 #include "lib/getattr.h"
 // #include "lib/fgetattr.h"
 // #include "lib/access.h"
@@ -53,8 +53,8 @@
 #include "lib/tar_structure.h"
 #include <fuse.h>
 
-int fd;
-
+extern int fd, fdd;
+int fd, fdd;
 /*
  * Command line options
  *
@@ -199,7 +199,7 @@ void* sifs_init(struct fuse_conn_info* conn, struct fuse_config* cfg) {
 
 static struct fuse_operations sifs_oper = {
   .init 				= sifs_init,
-  // .destroy 		= sifs_destroy,
+  .destroy 		= sifs_destroy,
   .getattr 			= sifs_getattr,
   // .fgetattr 		= sifs_fgetattr,
   // .access 			= sifs_access,
@@ -235,14 +235,20 @@ int main(int argc, char **argv) {
   set_log_output(stdout);
 
 	// Opening file
-	if ((fd = open(argv[argc - 1], O_RDONLY)) == -1) {
+	if ((fd = open(argv[argc - 1], O_RDWR)) == -1) {
 		logger(DEBUG, "[main] File open error(%s): %d\n", argv[argc - 1], errno);
 		return -1;
 	}
 	else {
 		logger(DEBUG, "[main] Opened file: %s\n", argv[argc - 1]);
 	}
-
+	if ((fdd = open("testy.tar", O_WRONLY | O_CREAT, 0644)) == -1) {
+			logger(DEBUG, "[main] File2 open error(%s): %d\n", "testy.tar", errno);
+			return -1;
+		}
+		else {
+			logger(DEBUG, "[main] Opened file2: %s\n", "testy.tar");
+		}
 	// Moving reading head to beginning of file
 	lseek(fd, 0, SEEK_SET);
 
@@ -255,9 +261,10 @@ int main(int argc, char **argv) {
 	int ret;
 	ret = fuse_main(args.argc, args.argv, &sifs_oper, NULL);
 	fuse_opt_free_args(&args);
-
+	
 	close(fd);
 
 	logger(DEBUG, "[main] Ended\n");
+	
 	return ret;
 }
