@@ -51,17 +51,19 @@ int sifs_mkdir(const char* path, mode_t mode) {
 	// Adding node metadata
 	n->header = malloc(sizeof(struct tar_header));
 
+	memcpy(n->header, parent->header, sizeof(struct tar_header));
+
 	n->header->name[0] = '.';
 	strcpy(n->header->name + 1, path);
 	n->header->name[strlen(path) + 1] = '/';
 	n->header->name[strlen(path) + 2] = '\0';
 	logger(DEBUG, LOG_BOLD LOG_FG_RED "[mkdir] New node name: %s\n" LOG_RESET, n->header->name);
 
-	sprintf(n->header->mode, "%u", mode | S_IFDIR);
-	sprintf(n->header->uid, "%u", getuid());
-	sprintf(n->header->gid, "%u", getgid());
+	sprintf(n->header->mode, "%07o", mode);
+	sprintf(n->header->uid, "%07u", getuid());
+	sprintf(n->header->gid, "%07u", getgid());
 	strcpy(n->header->typeflag, "5");
-	sprintf(n->header->size, "%d", 0);
+	sprintf(n->header->size, "%011ld", (long int)10000);
 
 	time_t t;
 	t = time(NULL);
@@ -69,7 +71,8 @@ int sifs_mkdir(const char* path, mode_t mode) {
  	sprintf(n->header->atime, "%ld", t);
 	sprintf(n->header->ctime, "%ld", t);
 
-	sprintf(n->header->chksum, "%d", generate_checksum(n->header));
+	sprintf(n->header->chksum, "%06ld", (long int)generate_checksum(n->header));
+	n->header->chksum[7] = ' ';
 
 	struct node **auxDirChildren;
 	parent->children_size++;

@@ -120,6 +120,7 @@ int populate_tree_directory(int fd, struct node *dir) {
 		if (strcmp(auxNode->header->typeflag, "5") == 0) {
 			// Node is a directory
 			//printf("\tAdding children to directory node for %s\n", auxTar->name);
+			sprintf(auxNode->header->size, "%ld", (long int)10000);
 			fd = populate_tree_directory(fd, auxNode);
 			//printf("\t\tFinished adding children to %s\n", auxTar->name);
 		} else {
