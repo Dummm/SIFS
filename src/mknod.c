@@ -1,13 +1,16 @@
 #include "../lib/mknod.h"
 
 unsigned int generate_checksum2(const struct tar_header* h) {
-	unsigned int i;
+unsigned int i;
 	unsigned char *p = (unsigned char*) h;
-	unsigned int res = 256;
+	unsigned int res = 256; // ???
+	if(strcmp(h->typeflag, "5") == 0) {
+		res += 47;
+	}
 	for (i = 0; i < offsetof(struct tar_header, chksum); i++) {
 		res += p[i];
 	}
-	for (i = offsetof(struct tar_header, typeflag); i < sizeof(*h); i++) {
+	for (i = offsetof(struct tar_header, typeflag); i < sizeof(struct tar_header); i++) {
 		res += p[i];
 	}
 	return res;
@@ -42,34 +45,43 @@ int sifs_mknod(const char* path, mode_t mode, dev_t dev) {
 	free(parent_path);
 
 	// Creating node
-	struct node *n = malloc(sizeof(struct node));
+	struct node *n = calloc(1, sizeof(struct node));
 	n->parent = parent;
 	n->children = NULL;
 	n->children_size = 0;
-	n->file = malloc(1);
+	n->file = calloc(1, 512);
 	strcpy(n->file, "");
 
 	// Adding node metadata
-	n->header = malloc(sizeof(struct tar_header));
+	n->header = calloc(1, sizeof(struct tar_header));
 
 	n->header->name[0] = '.';
 	strcpy(n->header->name + 1, path);
 	n->header->name[strlen(path) + 1] = '\0';
 	logger(DEBUG, LOG_BOLD LOG_FG_BLUE "[mknod] New node name: %s\n" LOG_RESET, n->header->name);
 
-	sprintf(n->header->mode, "%u", mode | S_IFREG);
-	sprintf(n->header->uid, "%u", getuid());
-	sprintf(n->header->gid, "%u", getgid());
+	sprintf(n->header->mode, "%07o", mode);
+	sprintf(n->header->uid, "%07o", getuid());
+	sprintf(n->header->gid, "%07o", getgid());
 	strcpy(n->header->typeflag, "0");
-	sprintf(n->header->size, "%d", 0);
+	strcpy(n->header->size, "0000000000");
+
+	strcpy(n->header->uname, getpwuid(getuid())->pw_name);
+	strcpy(n->header->gname, getgrgid(getgid())->gr_name);
+
+	//sprintf(n->header->magic, "%o" "ustar  ");
+	//n->header->magic[7] = '\0';
+	strcpy(n->header->magic, "ustar  ");
+	n->header->magic[7] = '\0';
+
 
 	time_t t;
 	t = time(NULL);
- 	sprintf(n->header->mtime, "%ld", t);
- 	sprintf(n->header->atime, "%ld", t);
-	sprintf(n->header->ctime, "%ld", t);
+ 	sprintf(n->header->mtime, "%lo", t);
 
-	sprintf(n->header->chksum, "%d", generate_checksum2(n->header));
+
+	sprintf(n->header->chksum, "%06o", generate_checksum2(n->header));
+	n->header->chksum[7] = ' ';
 
 	struct node **auxDirChildren;
 	parent->children_size++;
