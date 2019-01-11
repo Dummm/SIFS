@@ -315,6 +315,7 @@ int main(int argc, char **argv) {
 	fuse_opt_free_args(&args);
 
 	close(fd);
+	close(fdd);
 
 	logger(DEBUG, "[main] Ended\n");
 

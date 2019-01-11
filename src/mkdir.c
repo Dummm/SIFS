@@ -73,7 +73,7 @@ int sifs_mkdir(const char* path, mode_t mode) {
 	//sprintf(n->header->size, "%011ld", (long int)10000);
 	//printf("%s\t%o\n", n->header->size);
 
-	strcpy(n->header->size, "1000000000");
+	strcpy(n->header->size, "0000010000");
 	//sprintf(n->header->size, "%011ld", (long int)10000);
 
 

@@ -86,10 +86,21 @@ void sifs_destroy(void* private_data) {
 	//struct node* parent;
 	//parent = get_node_from_path(private_data,"/");
 	print_tree2((struct node*)private_data);
+
+	/*
 	lseek(fdd, 0, SEEK_END);
 	for (int i = 0; i < 18*512 - 10; i++){
 		write(fdd, "\0", 1);
 	}
 	lseek(fdd, 0, SEEK_SET);
+	*/
+
+	lseek(fdd, 17 * 512 - 1, SEEK_CUR);
+	/*
+	char *e = calloc(1, sizeof(char));
+	e[0] = '\0';
+	write(fdd, e, 1);
+	*/
+	write(fdd, "\0", 1);
 }
 
