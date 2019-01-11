@@ -3,7 +3,10 @@
 unsigned int generate_checksum(const struct tar_header* h) {
 	unsigned int i;
 	unsigned char *p = (unsigned char*) h;
-	unsigned int res = 256 + 47; // ???
+	unsigned int res = 256; // ???
+	if(strcmp(h->typeflag, "5") == 0) {
+		res += 47;
+	}
 	for (i = 0; i < offsetof(struct tar_header, chksum); i++) {
 		res += p[i];
 	}
@@ -42,16 +45,19 @@ int sifs_mkdir(const char* path, mode_t mode) {
 	free(parent_path);
 
 	// Creating node
-	struct node *n = malloc(sizeof(struct node));
+	//struct node *n = malloc(sizeof(struct node));
+	struct node *n = calloc(1, sizeof(struct node));
 	n->parent = parent;
 	n->children = NULL;
 	n->children_size = 0;
 	n->file = NULL;
 
 	// Adding node metadata
-	n->header = malloc(sizeof(struct tar_header));
+	//n->header = malloc(sizeof(struct tar_header));
+	n->header = calloc(1, sizeof(struct tar_header));
 
-	memcpy(n->header, parent->header, sizeof(struct tar_header));
+	//memcpy(n->header, parent->header, sizeof(struct tar_header));
+
 	n->header->name[0] = '.';
 	strcpy(n->header->name + 1, path);
 	n->header->name[strlen(path) + 1] = '/';
@@ -66,8 +72,18 @@ int sifs_mkdir(const char* path, mode_t mode) {
 	strcpy(n->header->typeflag, "5");
 	//sprintf(n->header->size, "%011ld", (long int)10000);
 	//printf("%s\t%o\n", n->header->size);
-	strcpy(n->header->size, "10000");
 
+	strcpy(n->header->size, "1000000000");
+	//sprintf(n->header->size, "%011ld", (long int)10000);
+
+
+	strcpy(n->header->uname, getpwuid(getuid())->pw_name);
+	strcpy(n->header->gname, getgrgid(getgid())->gr_name);
+
+	//sprintf(n->header->magic, "%o" "ustar  ");
+	//n->header->magic[7] = '\0';
+	strcpy(n->header->magic, "ustar  ");
+	n->header->magic[7] = '\0';
 
 	time_t t;
 	t = time(NULL);
