@@ -81,20 +81,6 @@ static const struct fuse_opt option_spec[] = {
 };
 */
 
-
-unsigned int generate_checksum_(const struct tar_header* h) {
-	unsigned int i;
-	unsigned char *p = (unsigned char*) h;
-	unsigned int res = 256 + 47; // ???
-	for (i = 0; i < offsetof(struct tar_header, chksum); i++) {
-		res += p[i];
-	}
-	for (i = offsetof(struct tar_header, typeflag); i < sizeof(struct tar_header); i++) {
-		res += p[i];
-	}
-	return res;
-}
-
 // Function that creates tree for directory structure
 int populate_tree_directory(int fd, struct node *dir) {
 	struct tar_header *auxTar = malloc(sizeof(struct tar_header));
@@ -189,7 +175,6 @@ void* sifs_init(struct fuse_conn_info* conn, struct fuse_config* cfg) {
 
 	root->header = malloc(sizeof(struct tar_header));
 	strcpy(root->header->name, "./");
-	/*
 	sprintf(root->header->mode, "%u", s.st_mode);
 	sprintf(root->header->uid, "%u", s.st_uid);
 	sprintf(root->header->gid, "%u", s.st_gid);
@@ -199,35 +184,6 @@ void* sifs_init(struct fuse_conn_info* conn, struct fuse_config* cfg) {
  	sprintf(root->header->mtime, "%ld", s.st_mtime);
  	sprintf(root->header->atime, "%ld", s.st_atime);
 	sprintf(root->header->ctime, "%ld", s.st_ctime);
-*/
-
-
-	sprintf(root->header->mode, "%07o", S_IRWXU  | S_IRWXG | S_IRWXO);
-	sprintf(root->header->uid, "%07o", getuid());
-	sprintf(root->header->gid, "%07o", getgid());
-	strcpy(root->header->typeflag, "5");
-	//sprintf(root->header->size, "%011ld", (long int)0);
-	strcpy(root->header->size, "10000");
-
-
-	//sprintf(root->header->uname, "%s", getpwuid(getuid())->pw_name);
-	//sprintf(root->header->gname, "%s", getgrgid(getgid())->gr_name);
-	strcpy(root->header->uname, getpwuid(getuid())->pw_name);
-	strcpy(root->header->gname, getgrgid(getgid())->gr_name);
-
-	//sprintf(root->header->magic, "%o" "ustar  ");
-	//root->header->magic[7] = '\0';
-	strcpy(root->header->magic, "ustar  ");
-	root->header->magic[7] = '\0';
-
-	time_t t;
-	t = time(NULL);
- 	sprintf(root->header->mtime, "%lo", t);
- 	//sprintf(n->header->atime, "%ld", t);
-	//sprintf(n->header->ctime, "%ld", t);
-
-	sprintf(root->header->chksum, "%06o", generate_checksum_(root->header));
-	root->header->chksum[7] = ' ';
 
 	// Creating tree for directory structure
 	populate_tree_directory(fd, root);

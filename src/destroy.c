@@ -2,28 +2,12 @@
 int fd; /* gets value from sifs.c */
 int fdd;
 int enfd;
-
-
-unsigned int generate_checksum_wew(const struct tar_header* h) {
-	unsigned int i;
-	unsigned char *p = (unsigned char*) h;
-	unsigned int res = 256 + 47; // ???
-	for (i = 0; i < offsetof(struct tar_header, chksum); i++) {
-		res += p[i];
-	}
-	for (i = offsetof(struct tar_header, typeflag); i < sizeof(struct tar_header); i++) {
-		res += p[i];
-	}
-	return res;
-}
-
 void print_tree2(struct node *n) {
 	//~ logger(DEBUG, "\t%s%d\n", n->header->name, strtoul(n->header->size, NULL, 8));
 	if(strcmp(n->header->name, "./") != 0){
 		if(strcmp(n->header->typeflag, "5") == 0) {
 			//n->header->typeflag[-1] = ' ';
-			sprintf(n->header->size, "%011lo", (long int)0);
-			//sprintf(n->header->chksum, "%06o", generate_checksum_wew(n->header));
+			sprintf(n->header->size, "%011ld", (long int)0);
 		}
 
 		//printf("%lo\t %lo\n", n->header->mode, n->header);
@@ -52,10 +36,10 @@ void print_tree2(struct node *n) {
 		if(strcmp(n->header->typeflag, "0") == 0){
 			int file_size = strtoul(n->header->size, NULL, 8);
 			if(file_size!=0) {
-				//write(fdd, n->file, 512 * ((file_size/512) + 2));
-				write(fdd, n->file, file_size);
-				int pos = lseek(fdd, 0, SEEK_CUR);
-				lseek(fdd, (512 - pos % 512), SEEK_CUR);
+				write(fdd, n->file, 512 * ((file_size/512) + 1));
+				//~ write(fdd, n->file, file_size);
+				//~ int pos = lseek(fdd, 0, SEEK_CUR);
+				//~ lseek(fdd, (512 - pos % 512), SEEK_CUR);
 			}
 		}
 	}
