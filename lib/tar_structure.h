@@ -8,6 +8,9 @@
 #ifndef tar_structure_h
 #define tar_structure_h
 
+#include <string.h>
+#include <stddef.h>
+
 struct tar_archive{
 	char archive_name[50];
 	struct file_tar_header **headers;
@@ -53,4 +56,7 @@ struct tar_header {// byte offset
   char mfill[8];        // 500
   char xmagic[4];       // 508  "tar"
 };
+
+unsigned int generate_checksum(const struct tar_header* h);
+
 #endif

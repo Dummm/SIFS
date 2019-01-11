@@ -26,6 +26,7 @@ default: sifs
 #
 sifs: \
 	sifs.o \
+	src/tar_structure.o \
 	src/logger.o \
 	src/tree.o \
 	src/getattr.o \
@@ -36,9 +37,10 @@ sifs: \
 	src/mknod.o \
 	src/mkdir.o \
 	src/destroy.o \
-	src/write.o 
+	src/write.o
 	$(CC) $(CFLAGS) -o \
 	sifs \
+	src/tar_structure.o \
 	src/logger.o \
 	src/tree.o \
 	src/getattr.o \
@@ -62,13 +64,16 @@ write.o:  src/write.c lib/write.h
 logger.o:  src/logger.c lib/logger.h
 	$(CC) $(CFLAGS) -c logger.c
 
+tar_structure.o:  src/tar_structure.c lib/tar_structure.h
+	$(CC) $(CFLAGS) -c tar_structure.c
+
 tree.o:  src/tree.c lib/tree.h
 	$(CC) $(CFLAGS) -c tree.c
 
 
 mkdir.o: src/mkdir.c lib/mkdir.h
 	$(CC) $(CFLAGS) -c mkdir.c
-	
+
 getattr.o: src/getattr.c lib/getattr.h
 	$(CC) $(CFLAGS) -c getattr.c
 
@@ -86,7 +91,7 @@ read.o: src/read.c lib/read.h
 
 mknod.o: src/mknod.c lib/mknod.h
 	$(CC) $(CFLAGS) -c mknod.c
-	
+
 destroy.o: src/destroy.c lib/destroy.h
 	$(CC) $(CFLAGS) -c destroy.c
 

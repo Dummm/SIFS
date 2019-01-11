@@ -81,23 +81,6 @@ static const struct fuse_opt option_spec[] = {
 };
 */
 
-
-unsigned int generate_checksum_(const struct tar_header* h) {
-	unsigned int i;
-	unsigned char *p = (unsigned char*) h;
-	unsigned int res = 256; // ???
-	if(strcmp(h->typeflag, "5") == 0) {
-		res += 47;
-	}
-	for (i = 0; i < offsetof(struct tar_header, chksum); i++) {
-		res += p[i];
-	}
-	for (i = offsetof(struct tar_header, typeflag); i < sizeof(struct tar_header); i++) {
-		res += p[i];
-	}
-	return res;
-}
-
 // Function that creates tree for directory structure
 int populate_tree_directory(int fd, struct node *dir) {
 	struct tar_header *auxTar = malloc(sizeof(struct tar_header));
@@ -233,7 +216,7 @@ void* sifs_init(struct fuse_conn_info* conn, struct fuse_config* cfg) {
  	//sprintf(n->header->atime, "%ld", t);
 	//sprintf(n->header->ctime, "%ld", t);
 
-	sprintf(root->header->chksum, "%06o", generate_checksum_(root->header));
+	sprintf(root->header->chksum, "%06o", generate_checksum(root->header));
 	root->header->chksum[7] = ' ';
 
 	// Creating tree for directory structure
