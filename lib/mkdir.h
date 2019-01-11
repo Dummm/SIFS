@@ -3,6 +3,8 @@
 #include <time.h>
 #include <unistd.h>
 #include <stddef.h>
+#include <pwd.h>
+#include <grp.h>
 #include "logger.h" /* logger */
 #include "tree.h"
 #include "fuse.h"

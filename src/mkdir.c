@@ -3,11 +3,11 @@
 unsigned int generate_checksum(const struct tar_header* h) {
 	unsigned int i;
 	unsigned char *p = (unsigned char*) h;
-	unsigned int res = 256;
+	unsigned int res = 256 + 47; // ???
 	for (i = 0; i < offsetof(struct tar_header, chksum); i++) {
 		res += p[i];
 	}
-	for (i = offsetof(struct tar_header, typeflag); i < sizeof(*h); i++) {
+	for (i = offsetof(struct tar_header, typeflag); i < sizeof(struct tar_header); i++) {
 		res += p[i];
 	}
 	return res;
@@ -52,7 +52,6 @@ int sifs_mkdir(const char* path, mode_t mode) {
 	n->header = malloc(sizeof(struct tar_header));
 
 	memcpy(n->header, parent->header, sizeof(struct tar_header));
-
 	n->header->name[0] = '.';
 	strcpy(n->header->name + 1, path);
 	n->header->name[strlen(path) + 1] = '/';
@@ -60,19 +59,31 @@ int sifs_mkdir(const char* path, mode_t mode) {
 	logger(DEBUG, LOG_BOLD LOG_FG_RED "[mkdir] New node name: %s\n" LOG_RESET, n->header->name);
 
 	sprintf(n->header->mode, "%07o", mode);
-	sprintf(n->header->uid, "%07u", getuid());
-	sprintf(n->header->gid, "%07u", getgid());
+	sprintf(n->header->uid, "%07o", getuid());
+	sprintf(n->header->gid, "%07o", getgid());
+	//sprintf(n->header->uid, "%s", getpwuid(getuid())->pw_name);qq
+	//sprintf(n->header->gid, "%s", getgrgid(getgid())->gr_name);
 	strcpy(n->header->typeflag, "5");
-	sprintf(n->header->size, "%011ld", (long int)10000);
+	//sprintf(n->header->size, "%011ld", (long int)10000);
+	//printf("%s\t%o\n", n->header->size);
+	strcpy(n->header->size, "10000");
+
 
 	time_t t;
 	t = time(NULL);
- 	sprintf(n->header->mtime, "%ld", t);
- 	sprintf(n->header->atime, "%ld", t);
-	sprintf(n->header->ctime, "%ld", t);
+ 	sprintf(n->header->mtime, "%lo", t);
+ 	//sprintf(n->header->atime, "%ld", t);
+	//sprintf(n->header->ctime, "%ld", t);
 
-	sprintf(n->header->chksum, "%06ld", (long int)generate_checksum(n->header));
+	sprintf(n->header->chksum, "%06o", generate_checksum(n->header));
 	n->header->chksum[7] = ' ';
+
+	logger(DEBUG, LOG_BOLD LOG_BG_YELLOW LOG_FG_WHITE);
+
+	logger(DEBUG, "%s\n", parent->header->chksum);
+	logger(DEBUG, "%06o\n", generate_checksum(parent->header));
+
+	logger(DEBUG, LOG_RESET);
 
 	struct node **auxDirChildren;
 	parent->children_size++;
