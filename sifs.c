@@ -27,7 +27,7 @@
 #include "lib/readdir.h"
 #include "lib/mknod.h"
 #include "lib/mkdir.h"
-// #include "lib/unlink.h"
+#include "lib/unlink.h"
 // #include "lib/rmdir.h"
 // #include "lib/symlink.h"
 // #include "lib/rename.h"
@@ -243,7 +243,7 @@ static struct fuse_operations sifs_oper = {
   .readdir 			= sifs_readdir,
   .mknod 			= sifs_mknod,
   .mkdir 				= sifs_mkdir,
-  // .unlink 			= sifs_unlink,
+  .unlink 			= sifs_unlink,
   // .rmdir 			= sifs_rmdir,
   // .symlink 		= sifs_symlink,
   // .rename 			= sifs_rename,

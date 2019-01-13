@@ -34,6 +34,7 @@ sifs: \
 	src/opendir.o \
 	src/open.o \
 	src/read.o \
+	src/unlink.o \
 	src/mknod.o \
 	src/mkdir.o \
 	src/destroy.o \
@@ -50,6 +51,7 @@ sifs: \
 	src/mknod.o \
 	src/open.o \
 	src/read.o \
+	src/unlink.o \
 	src/write.o \
 	src/destroy.o \
 	sifs.o
@@ -94,6 +96,9 @@ mknod.o: src/mknod.c lib/mknod.h
 
 destroy.o: src/destroy.c lib/destroy.h
 	$(CC) $(CFLAGS) -c destroy.c
+
+unlink.o: src/unlink.c lib/unlink.h
+	$(CC) $(CFLAGS) -c unlink.c
 
 sifs.o: sifs.c lib/tar_structure.h
 	$(CC) $(CFLAGS) -c sifs.c
