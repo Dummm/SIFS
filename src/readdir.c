@@ -6,13 +6,6 @@ int sifs_readdir(
 ) {
 	logger(DEBUG, "[readdir] Started on path: %s\n", path);
 
-	/*
-	if (strcmp(path, "/") != 0) {
-		logger(DEBUG, "[readdir] Ended\n");
-		return -1;
-	}
-	*/
-
 	filler(buf, ".", NULL, 0, 0);
 	filler(buf, "..", NULL, 0, 0);
 
@@ -25,8 +18,6 @@ int sifs_readdir(
 	struct node *n;
 	n = get_node_from_path(root, path);
 
-
-	//filler(buf, "...", NULL, 0,0);
 	for(int i = 0; i < n->children_size; i++){
 		char buffer[50];
 		strcpy(buffer, n->children[i]->header->name+2);
@@ -34,15 +25,13 @@ int sifs_readdir(
 		if( strcmp(n->children[i]->header->typeflag, "5") == 0){
 			buffer[ strlen(buffer) - 1 ] = '\0';
 		}
-		//filler(buf, buffer, NULL, 0, 0);
-		//logger(DEBUG, "\t[readdit] Ce se intampla, doctore? %s\n", strrchr(buffer, '/'));
 		if(strrchr(buffer, '/')) {
 			filler(buf, strrchr(buffer, '/') + 1, NULL, 0, 0);
 		}
 		else {
 			filler(buf, buffer, NULL, 0, 0);
 		}
-		logger(DEBUG, LOG_BOLD LOG_FG_GREEN "[readdir] Buffer: %s\n" LOG_RESET , buffer);
+		logger(DEBUG, "[readdir] Buffer: %s\n" , buffer);
 	}
 
 	logger(DEBUG, "[readdir] Ended\n");

@@ -1,8 +1,8 @@
 #include "../lib/mkdir.h"
 
 int sifs_mkdir(const char* path, mode_t mode) {
-	logger(DEBUG, LOG_BOLD LOG_FG_RED "[mkdir] Started on path: %s\n" LOG_RESET, path);
-	logger(DEBUG, LOG_BOLD LOG_FG_RED "[mkdir] Mode: %d\t%o\n" LOG_RESET, mode, mode);
+	logger(DEBUG, "[mkdir] Started on path: %s\n", path);
+	logger(DEBUG, "[mkdir] Mode: %d\t%o\n", mode, mode);
 
 	struct fuse_context* context;
 	context = fuse_get_context();
@@ -12,7 +12,7 @@ int sifs_mkdir(const char* path, mode_t mode) {
 
 	int last_slash;
 	last_slash = (strrchr(path, '/') - path);
-	logger(DEBUG, LOG_BOLD LOG_FG_RED "[mkdir] Position of last slash: %d\n" LOG_RESET, last_slash);
+	logger(DEBUG, "[mkdir] Position of last slash: %d\n", last_slash);
 
 	// Root exception
 	if(!last_slash) last_slash++;
@@ -21,11 +21,11 @@ int sifs_mkdir(const char* path, mode_t mode) {
 	parent_path = malloc((last_slash + 1) * sizeof(char));
 	strncpy(parent_path, path, last_slash);
 	parent_path[last_slash] = '\0';
-	logger(DEBUG, LOG_BOLD LOG_FG_RED "[mkdir] Path of parent node: %s-\n" LOG_RESET, parent_path);
+	logger(DEBUG, "[mkdir] Path of parent node: %s-\n", parent_path);
 
 	struct node* parent;
 	parent = get_node_from_path(root, parent_path);
-	logger(DEBUG, LOG_BOLD LOG_FG_RED "[mkdir] Returned node: %s\n" LOG_RESET, parent->header->name);
+	logger(DEBUG, "[mkdir] Returned node: %s\n", parent->header->name);
 	free(parent_path);
 
 	// Creating node
@@ -46,26 +46,18 @@ int sifs_mkdir(const char* path, mode_t mode) {
 	strcpy(n->header->name + 1, path);
 	n->header->name[strlen(path) + 1] = '/';
 	n->header->name[strlen(path) + 2] = '\0';
-	logger(DEBUG, LOG_BOLD LOG_FG_RED "[mkdir] New node name: %s\n" LOG_RESET, n->header->name);
+	logger(DEBUG, "[mkdir] New node name: %s\n", n->header->name);
 
 	sprintf(n->header->mode, "%07o", mode);
 	sprintf(n->header->uid, "%07o", getuid());
 	sprintf(n->header->gid, "%07o", getgid());
-	//sprintf(n->header->uid, "%s", getpwuid(getuid())->pw_name);qq
-	//sprintf(n->header->gid, "%s", getgrgid(getgid())->gr_name);
-	strcpy(n->header->typeflag, "5");
-	//sprintf(n->header->size, "%011ld", (long int)10000);
-	//printf("%s\t%o\n", n->header->size);
-
-	strcpy(n->header->size, "0000010000");
-	//sprintf(n->header->size, "%011ld", (long int)10000);
-
-
 	strcpy(n->header->uname, getpwuid(getuid())->pw_name);
 	strcpy(n->header->gname, getgrgid(getgid())->gr_name);
+	strcpy(n->header->typeflag, "5");
 
-	//sprintf(n->header->magic, "%o" "ustar  ");
-	//n->header->magic[7] = '\0';
+	//sprintf(n->header->size, "%011ld", (long int)10000);
+	strcpy(n->header->size, "0000010000");
+
 	strcpy(n->header->magic, "ustar  ");
 	n->header->magic[7] = '\0';
 
@@ -78,19 +70,12 @@ int sifs_mkdir(const char* path, mode_t mode) {
 	sprintf(n->header->chksum, "%06o", generate_checksum(n->header));
 	n->header->chksum[7] = ' ';
 
-	logger(DEBUG, LOG_BOLD LOG_BG_YELLOW LOG_FG_WHITE);
-
-	logger(DEBUG, "%s\n", parent->header->chksum);
-	logger(DEBUG, "%06o\n", generate_checksum(parent->header));
-
-	logger(DEBUG, LOG_RESET);
-
 	struct node **auxDirChildren;
 	parent->children_size++;
 	auxDirChildren = realloc(parent->children, parent->children_size * sizeof(struct node*));
 	parent->children = auxDirChildren;
 	parent->children[parent->children_size - 1] = n;
 
-	logger(DEBUG, LOG_BOLD LOG_FG_RED "[mkdir] Ended\n" LOG_RESET);
+	logger(DEBUG, "[mkdir] Ended\n");
   return 0;
 }

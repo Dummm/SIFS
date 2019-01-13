@@ -2,6 +2,8 @@
 #define LOGGING_HEADERS
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
 
 #define LOG_FG_BLACK		"\x1b[31m"
 #define LOG_FG_RED     	"\x1b[31m"
@@ -28,7 +30,9 @@
 
 enum log_level_t { DEBUG, WARN, ERROR, OFF };
 typedef enum log_level_t log_level;
+
 void set_log_level(log_level level);
 void set_log_output(FILE *level);
 void logger(log_level, char *s, ...);
+
 #endif

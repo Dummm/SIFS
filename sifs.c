@@ -89,8 +89,6 @@ int populate_tree_directory(int fd, struct node *dir) {
 	struct node *auxNode;
 	struct node **auxDirChildren;
 
-	//printf("\nCurrent directory node: %s\n", dir->header->name);
-
 	while (read(fd, auxTar, sizeof(struct tar_header))) {
 		/// Verifying if the file we read is in the same directory
 		if (strncmp(
@@ -111,24 +109,20 @@ int populate_tree_directory(int fd, struct node *dir) {
 
 		auxNode->parent = dir;
 		auxNode->header = auxTar;
-		//printf("\tCreated node.\n");
 
 		// Adding node to parent
 		dir->children_size++;
 		auxDirChildren = realloc(dir->children, dir->children_size * sizeof(struct node *));
 		dir->children = auxDirChildren;
 		dir->children[dir->children_size - 1] = auxNode;
-		//printf("\tAdded node to parent.\n");
 
 		if (strcmp(auxNode->header->typeflag, "5") == 0) {
 			// Node is a directory
-			//printf("\tAdding children to directory node for %s\n", auxTar->name);
 			sprintf(auxNode->header->size, "%ld", (long int)10000);
 			fd = populate_tree_directory(fd, auxNode);
-			//printf("\t\tFinished adding children to %s\n", auxTar->name);
-		} else {
+		}
+		else {
 			// Node is a file
-			//printf("\tAdding file for %s\n", auxTar->name);
 			int sz = strtoul(auxTar->size, NULL, 8);
 
 			//auxNode->file = malloc(sz);
@@ -156,6 +150,7 @@ int populate_tree_directory(int fd, struct node *dir) {
 	// Returning new reading position
 	return fd;
 }
+
 // Function that prints tree
 void print_tree(struct node *n) {
 	logger(DEBUG, "\t%s\n", n->header->name);
@@ -182,33 +177,14 @@ void* sifs_init(struct fuse_conn_info* conn, struct fuse_config* cfg) {
 
 	root->header = malloc(sizeof(struct tar_header));
 	strcpy(root->header->name, "./");
-	/*
-	sprintf(root->header->mode, "%u", s.st_mode);
-	sprintf(root->header->uid, "%u", s.st_uid);
-	sprintf(root->header->gid, "%u", s.st_gid);
-	strcpy(root->header->chksum, "00000000");
-	strcpy(root->header->typeflag, "5");
-	sprintf(root->header->size, "%ld", s.st_size);
- 	sprintf(root->header->mtime, "%ld", s.st_mtime);
- 	sprintf(root->header->atime, "%ld", s.st_atime);
-	sprintf(root->header->ctime, "%ld", s.st_ctime);
-	*/
 
 	sprintf(root->header->mode, "%07o", S_IRWXU  | S_IRWXG | S_IRWXO);
 	sprintf(root->header->uid, "%07o", getuid());
 	sprintf(root->header->gid, "%07o", getgid());
 	strcpy(root->header->typeflag, "5");
-	//sprintf(root->header->size, "%011ld", (long int)0);
-	//strcpy(root->header->size, "10000");
 	sprintf(root->header->size, "%ld", (long int)10000);
-
-	//sprintf(root->header->uname, "%s", getpwuid(getuid())->pw_name);
-	//sprintf(root->header->gname, "%s", getgrgid(getgid())->gr_name);
 	strcpy(root->header->uname, getpwuid(getuid())->pw_name);
 	strcpy(root->header->gname, getgrgid(getgid())->gr_name);
-
-	//sprintf(root->header->magic, "%o" "ustar  ");
-	//root->header->magic[7] = '\0';
 	strcpy(root->header->magic, "ustar  ");
 	root->header->magic[7] = '\0';
 
@@ -236,17 +212,17 @@ void* sifs_init(struct fuse_conn_info* conn, struct fuse_config* cfg) {
 
 static struct fuse_operations sifs_oper = {
   .init 				= sifs_init,
-  .destroy 		= sifs_destroy,
+  .destroy 			= sifs_destroy,
   .getattr 			= sifs_getattr,
   // .fgetattr 		= sifs_fgetattr,
   // .access 			= sifs_access,
   // .readlink 		= sifs_readlink,
   .opendir 			= sifs_opendir,
   .readdir 			= sifs_readdir,
-  .mknod 			= sifs_mknod,
+  .mknod 				= sifs_mknod,
   .mkdir 				= sifs_mkdir,
   .unlink 			= sifs_unlink,
-  .rmdir 			= sifs_rmdir,
+  .rmdir 				= sifs_rmdir,
   // .symlink 		= sifs_symlink,
   // .rename 			= sifs_rename,
   // .link 				= sifs_link,
@@ -257,7 +233,7 @@ static struct fuse_operations sifs_oper = {
   // .utimens 		= sifs_utimens,
   .open 				= sifs_open,
   .read 				= sifs_read,
- .write 			= sifs_write
+ 	.write 				= sifs_write
   // .statfs 			= sifs_statfs,
   // .release 		= sifs_release,
   // .releasedir 	= sifs_releasedir,
@@ -268,6 +244,7 @@ static struct fuse_operations sifs_oper = {
 };
 
 int main(int argc, char **argv) {
+	logger(DEBUG, "[main] Started\n");
   set_log_level(DEBUG);
   set_log_output(stdout);
 
@@ -288,8 +265,10 @@ int main(int argc, char **argv) {
 	struct fuse_args args = FUSE_ARGS_INIT(argc - 1, argv);
 
 	// Parse options
-	//if (fuse_opt_parse(&args, &options, option_spec, NULL) == -1)
-	//	return 1;
+	/*
+	if (fuse_opt_parse(&args, &options, option_spec, NULL) == -1)
+	return 1;
+	*/
 
 	int ret;
 	ret = fuse_main(args.argc, args.argv, &sifs_oper, NULL);
@@ -299,6 +278,5 @@ int main(int argc, char **argv) {
 	close(fdd);
 
 	logger(DEBUG, "[main] Ended\n");
-
 	return ret;
 }

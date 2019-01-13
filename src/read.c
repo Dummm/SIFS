@@ -1,6 +1,8 @@
 #include "../lib/read.h"
 
 int sifs_read(const char* path, char *buf, size_t size, off_t offset, struct fuse_file_info* fi) {
+	logger(DEBUG, "[read] Started on path: %s\n", path);
+
 	// Get to current file node:
 	struct fuse_context* context;
 	context = fuse_get_context();
@@ -12,16 +14,18 @@ int sifs_read(const char* path, char *buf, size_t size, off_t offset, struct fus
 	n = get_node_from_path(root, path);
 
 
-	size_t file_length = strlen( (char*)n->file );
+	size_t file_length = strlen((char*)n->file);
 	if (offset < file_length) {
 		if (offset + size > file_length)
 			size = file_length - offset;
 		logger(DEBUG, "[read] %s\n\n\n", n->file + offset);
 		memcpy(buf, (char*)n->file + offset, size);
-	} else {
+	}
+	else {
 		size = 0;
 	}
 
+	logger(DEBUG, "[read] Ended");
 	return size;
 }
 

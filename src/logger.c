@@ -1,7 +1,4 @@
 #include "../lib/logger.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
 
 FILE *OUTPUT = NULL;
 log_level LOG_LEVEL = ERROR;
