@@ -2,7 +2,7 @@
 int fd; /* gets value from sifs.c */
 int fdd;
 int enfd;
-
+char * argument;
 void print_tree2(struct node *n) {
 	//~ logger(DEBUG, "\t%s%d\n", n->header->name, strtoul(n->header->size, NULL, 8));
 	if(strcmp(n->header->name, "./") != 0){
@@ -58,6 +58,7 @@ void print_tree2(struct node *n) {
 }
 
 void sifs_destroy(void* private_data) {
+
 	lseek(fd, 0, SEEK_SET); /* move to the beginning of file */
 		//~ printf("FAILED!!!");
 	//~ }
@@ -65,6 +66,8 @@ void sifs_destroy(void* private_data) {
 	//struct node* parent;
 	//parent = get_node_from_path(private_data,"/");
 	print_tree2((struct node*)private_data);
+
+
 
 	/*
 	lseek(fdd, 0, SEEK_END);

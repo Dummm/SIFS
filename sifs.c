@@ -54,7 +54,9 @@
 #include <fuse.h>
 
 extern int fd, fdd;
+extern char* argument;
 int fd, fdd;
+char *argument;
 /*
  * Command line options
  *
@@ -98,7 +100,7 @@ int populate_tree_directory(int fd, struct node *dir) {
 			free(auxTar);
 			break;
 		}
-
+		
 		// Creating node
 		//auxNode = malloc(sizeof(struct node));
 		auxNode = calloc(1, sizeof(struct node));
@@ -284,6 +286,9 @@ int main(int argc, char **argv) {
 		else {
 			logger(DEBUG, "[main] Opened file2: %s\n", "testy.tar");
 		}
+		
+	argument = malloc(strlen(argv[argc-1]));
+	strcpy(argument, argv[argc-1]);	
 	// Moving reading head to beginning of file
 	lseek(fd, 0, SEEK_SET);
 
