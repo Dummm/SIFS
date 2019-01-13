@@ -34,8 +34,8 @@ void print_tree2(struct node *n) {
 		printf("\t%ld\n", sizeof(n->header->linkname));
 		*/
 
-		printf("\tPozitie pentru %s:\t%ld\n", n->header->name, lseek(fdd, 0, SEEK_CUR));
-		write(fdd, n->header, sizeof(struct tar_header));
+		printf("\tPozitie pentru %s:\t%ld\n", n->header->name, lseek(fd, 0, SEEK_CUR));
+		write(fd, n->header, sizeof(struct tar_header));
 
 		if(strcmp(n->header->typeflag, "0") == 0){
 			int file_size = strtoul(n->header->size, NULL, 8);
@@ -43,9 +43,9 @@ void print_tree2(struct node *n) {
 
 				//write(fdd, n->file, 512 * ((file_size/512) + 1));
 
-				write(fdd, n->file, file_size);
-				int pos = lseek(fdd, 0, SEEK_CUR);
-				lseek(fdd, (512 - pos % 512), SEEK_CUR);
+				write(fd, n->file, file_size);
+				int pos = lseek(fd, 0, SEEK_CUR);
+				lseek(fd, (512 - pos % 512), SEEK_CUR);
 			}
 		}
 	}
@@ -58,10 +58,10 @@ void print_tree2(struct node *n) {
 }
 
 void sifs_destroy(void* private_data) {
-	//lseek(fd, 0, SEEK_SET); /* move to the beginning of file */
+	lseek(fd, 0, SEEK_SET); /* move to the beginning of file */
 		//~ printf("FAILED!!!");
 	//~ }
-
+	
 	//struct node* parent;
 	//parent = get_node_from_path(private_data,"/");
 	print_tree2((struct node*)private_data);
@@ -74,12 +74,12 @@ void sifs_destroy(void* private_data) {
 	lseek(fdd, 0, SEEK_SET);
 	*/
 
-	lseek(fdd, 17 * 512 - 1, SEEK_CUR);
+	lseek(fd, 17 * 512 - 1, SEEK_CUR);
 	/*
 	char *e = calloc(1, sizeof(char));
 	e[0] = '\0';
 	write(fdd, e, 1);
 	*/
-	write(fdd, "\0", 1);
+	write(fd, "\0", 1);
 }
 
