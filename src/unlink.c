@@ -17,6 +17,7 @@ int sifs_unlink(const char* path) {
 			del_index = i;
 		}
 	}
+
 	free(deleted);
 	for (int i = del_index + 1; i < parent->children_size; i++) {
 		parent->children[i-1] = parent->children[i];

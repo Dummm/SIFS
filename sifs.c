@@ -279,14 +279,7 @@ int main(int argc, char **argv) {
 	else {
 		logger(DEBUG, "[main] Opened file: %s\n", argv[argc - 1]);
 	}
-	if ((fdd = open("testy.tar", O_WRONLY | O_CREAT | O_TRUNC, 0644)) == -1) {
-			logger(DEBUG, "[main] File2 open error(%s): %d\n", "testy.tar", errno);
-			return -1;
-		}
-		else {
-			logger(DEBUG, "[main] Opened file2: %s\n", "testy.tar");
-		}
-		
+	
 	argument = malloc(strlen(argv[argc-1]));
 	strcpy(argument, argv[argc-1]);	
 	// Moving reading head to beginning of file

@@ -1,4 +1,13 @@
 #include "../lib/destroy.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
+#include <stddef.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 int fd; /* gets value from sifs.c */
 int fdd;
 int enfd;
@@ -58,6 +67,20 @@ void print_tree2(struct node *n) {
 }
 
 void sifs_destroy(void* private_data) {
+	
+	off_t ofs = lseek(fd, 0, SEEK_END);
+	printf("\n\n\n\n\n\n%d\n\n\n\n\n", ofs);
+	lseek(fd, 0, SEEK_SET);
+	int crt = 0;
+	while(crt < ofs) {
+		crt += write(fd, "\0", ofs);
+		printf("\n\n\n\n\n\n\n%d\n\n\n\n\n\n\n", crt);
+	}
+	//~ printf("\n\n\n\n\n\n\n%d\n\n\n\n\n\n\n", write(fd, "\0", ofs));
+	//~ printf("\n\n\n\n\n\n\n%d\n\n\n\n\n\n\n", write(fd, "\0", ofs));
+	//~ printf("\n\n\n\n\n\n\n%d\n\n\n\n\n\n\n", write(fd, "\0", ofs));
+	//~ printf("\n\n\n\n\n\n\n%d\n\n\n\n\n\n\n", write(fd, "\0", ofs));
+	//printf("\n\n\n\n\n\n\n%d\n\n\n\n\n\n\n", write(fd, "\0", ofs));
 
 	lseek(fd, 0, SEEK_SET); /* move to the beginning of file */
 		//~ printf("FAILED!!!");
