@@ -35,6 +35,7 @@ sifs: \
 	src/open.o \
 	src/read.o \
 	src/unlink.o \
+	src/rmdir.o \
 	src/mknod.o \
 	src/mkdir.o \
 	src/destroy.o \
@@ -52,6 +53,7 @@ sifs: \
 	src/open.o \
 	src/read.o \
 	src/unlink.o \
+	src/rmdir.o \
 	src/write.o \
 	src/destroy.o \
 	sifs.o
@@ -71,7 +73,6 @@ tar_structure.o:  src/tar_structure.c lib/tar_structure.h
 
 tree.o:  src/tree.c lib/tree.h
 	$(CC) $(CFLAGS) -c tree.c
-
 
 mkdir.o: src/mkdir.c lib/mkdir.h
 	$(CC) $(CFLAGS) -c mkdir.c
@@ -99,6 +100,9 @@ destroy.o: src/destroy.c lib/destroy.h
 
 unlink.o: src/unlink.c lib/unlink.h
 	$(CC) $(CFLAGS) -c unlink.c
+
+rmdir.o: src/rmdir.c lib/rmdir.h
+	$(CC) $(CFLAGS) -c rmdir.c
 
 sifs.o: sifs.c lib/tar_structure.h
 	$(CC) $(CFLAGS) -c sifs.c

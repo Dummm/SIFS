@@ -28,7 +28,7 @@
 #include "lib/mknod.h"
 #include "lib/mkdir.h"
 #include "lib/unlink.h"
-// #include "lib/rmdir.h"
+#include "lib/rmdir.h"
 // #include "lib/symlink.h"
 // #include "lib/rename.h"
 // #include "lib/link.h"
@@ -100,7 +100,7 @@ int populate_tree_directory(int fd, struct node *dir) {
 			free(auxTar);
 			break;
 		}
-		
+
 		// Creating node
 		//auxNode = malloc(sizeof(struct node));
 		auxNode = calloc(1, sizeof(struct node));
@@ -246,7 +246,7 @@ static struct fuse_operations sifs_oper = {
   .mknod 			= sifs_mknod,
   .mkdir 				= sifs_mkdir,
   .unlink 			= sifs_unlink,
-  // .rmdir 			= sifs_rmdir,
+  .rmdir 			= sifs_rmdir,
   // .symlink 		= sifs_symlink,
   // .rename 			= sifs_rename,
   // .link 				= sifs_link,
@@ -279,9 +279,9 @@ int main(int argc, char **argv) {
 	else {
 		logger(DEBUG, "[main] Opened file: %s\n", argv[argc - 1]);
 	}
-	
+
 	argument = malloc(strlen(argv[argc-1]));
-	strcpy(argument, argv[argc-1]);	
+	strcpy(argument, argv[argc-1]);
 	// Moving reading head to beginning of file
 	lseek(fd, 0, SEEK_SET);
 

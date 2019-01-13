@@ -67,9 +67,9 @@ void print_tree2(struct node *n) {
 }
 
 void sifs_destroy(void* private_data) {
-	
+
 	off_t ofs = lseek(fd, 0, SEEK_END);
-	printf("\n\n\n\n\n\n%d\n\n\n\n\n", ofs);
+	printf("\n\n\n\n\n\n%ld\n\n\n\n\n", ofs);
 	lseek(fd, 0, SEEK_SET);
 	int crt = 0;
 	while(crt < ofs) {
@@ -85,7 +85,7 @@ void sifs_destroy(void* private_data) {
 	lseek(fd, 0, SEEK_SET); /* move to the beginning of file */
 		//~ printf("FAILED!!!");
 	//~ }
-	
+
 	//struct node* parent;
 	//parent = get_node_from_path(private_data,"/");
 	print_tree2((struct node*)private_data);
